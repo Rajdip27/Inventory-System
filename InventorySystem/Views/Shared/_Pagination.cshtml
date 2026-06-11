@@ -1,10 +1,11 @@
 ﻿@using InventorySystem.Cmmon
 @using Microsoft.AspNetCore.WebUtilities
-@{
-    var pages = PaginationHelper.GeneratePageList(Model); // int for page numbers, string for ellipsis
 
-    // Keep current query string values
-    var query = Context.Request.Query.ToDictionary(x => x.Key, x => x.Value.ToString());
+@{
+    var pages = PaginationHelper.GeneratePageList(Model);
+
+    var query = Context.Request.Query
+        .ToDictionary(x => x.Key, x => x.Value.ToString());
 
     string BuildUrl(int pageNum)
     {
@@ -13,52 +14,113 @@
         return QueryHelpers.AddQueryString(Context.Request.Path, query);
     }
 
-    // Helper to render a page button (link or disabled)
-    void RenderPageButton(string text, bool enabled, int targetPage = 1, bool isActive = false)
+    Microsoft.AspNetCore.Html.IHtmlContent RenderPageButton(
+        string text,
+        bool enabled,
+        int? targetPage = null,
+        bool isActive = false)
     {
-        if (enabled)
+        var cssClass = "page-btn";
+
+        if (isActive)
+            cssClass += " active";
+
+        if (!enabled)
+            cssClass += " disabled";
+
+        if (enabled && targetPage.HasValue)
         {
-            <a class="page-btn @(isActive ? "active" : "")" href="@BuildUrl(targetPage)">@text</a>
-            ;
+            return new Microsoft.AspNetCore.Html.HtmlString(
+                $"<a class=\"{cssClass}\" href=\"{BuildUrl(targetPage.Value)}\">{text}</a>"
+            );
         }
-        else
-        {
-            <span class="page-btn disabled">@text</span>
-            ;
-        }
+
+        return new Microsoft.AspNetCore.Html.HtmlString(
+            $"<span class=\"{cssClass}\">{text}</span>"
+        );
     }
 }
 <link href="~/css/pagination.css" rel="stylesheet" />
-<div class="pages-container">
-    <div class="pages">
-        <!-- First & Previous -->
-        @{
-            RenderPageButton("«", Model.PageNumber > 1, 1);
-            RenderPageButton("‹", Model.PageNumber > 1, Model.PageNumber - 1);
-        }
 
-        <!-- Dynamic page numbers -->
+<div class="pagination-bar">
+
+    <div class="pagination-left">
+
+        <span class="total-items">
+            Showing
+            <strong>@(((Model.PageNumber - 1) * Model.PageSize) + 1)</strong>
+            -
+            <strong>@Math.Min(Model.PageNumber * Model.PageSize, Model.TotalItems)</strong>
+            of
+            <strong>@Model.TotalItems</strong>
+            records
+        </span>
+
+        <span class="page-size-label">Show</span>
+
+        <select class="page-size-select" onchange="changePageSize(this)">
+            <option value="10" selected="@(Model.PageSize == 10)">10</option>
+            <option value="20" selected="@(Model.PageSize == 20)">20</option>
+            <option value="30" selected="@(Model.PageSize == 30)">30</option>
+            <option value="40" selected="@(Model.PageSize == 40)">40</option>
+            <option value="50" selected="@(Model.PageSize == 50)">50</option>
+            <option value="100" selected="@(Model.PageSize == 100)">100</option>
+            <option value="200" selected="@(Model.PageSize == 200)">200</option>
+        </select>
+
+        <span class="page-size-label">Records</span>
+
+    </div>
+
+    <div class="pages">
+
+        @RenderPageButton("«", Model.PageNumber > 1, 1)
+
+        @RenderPageButton("‹", Model.PageNumber > 1, Model.PageNumber - 1)
+
         @foreach (var p in pages)
         {
-            if (p is string)
+            if (p is string ellipsis)
             {
-                RenderPageButton(p.ToString()!, false);
+                <span class="page-btn ellipsis">@ellipsis</span>
             }
             else
             {
                 int pageNum = (int)p;
-                RenderPageButton(pageNum.ToString(), true, pageNum, pageNum == Model.PageNumber);
+
+                @RenderPageButton(
+                    pageNum.ToString(),
+                    true,
+                    pageNum,
+                    pageNum == Model.PageNumber
+                )
             }
         }
 
-        <!-- Next & Last -->
-        @{
-            RenderPageButton("›", Model.PageNumber < Model.TotalPages, Model.PageNumber + 1);
-            RenderPageButton("»", Model.PageNumber < Model.TotalPages, Model.TotalPages);
-        }
+        @RenderPageButton(
+            "›",
+            Model.PageNumber < Model.TotalPages,
+            Model.PageNumber + 1
+        )
+
+        @RenderPageButton(
+            "»",
+            Model.PageNumber < Model.TotalPages,
+            Model.TotalPages
+        )
+
     </div>
 
-    <div id="pageInfo">
-        মোট @Model.TotalItems টি, পেজ @Model.PageNumber/@Model.TotalPages
-    </div>
 </div>
+
+<script>
+    function changePageSize(select) {
+
+        const url = new URL(window.location.href);
+
+        url.searchParams.set("page", "1");
+        url.searchParams.set("pageSize", select.value);
+
+        window.location.href = url.toString();
+    }
+</script>
