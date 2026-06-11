@@ -8,7 +8,7 @@ namespace InventorySystem.Repositories;
 
 public interface ICustomerRepository
 {
-    Task<PagedResult<Customer>> GetAllAsync(string search, int pageNumber, int pageSize);
+    Task<PaginationModel<Customer>> GetAllAsync(string search, int pageNumber, int pageSize);
     Task<Customer> GetByIdAsync(int id);
     Task AddAsync(Customer customer);
     Task UpdateAsync(Customer customer);
@@ -16,7 +16,7 @@ public interface ICustomerRepository
 }
 public class CustomerRepository(ApplicationDbContext _context, ISignInHelper _user) : ICustomerRepository
 {
-    public async Task<PagedResult<Customer>> GetAllAsync(string search, int pageNumber, int pageSize)
+    public async Task<PaginationModel<Customer>> GetAllAsync(string search, int pageNumber, int pageSize)
     {
         IQueryable<Customer> query = _context.Customers
             .AsNoTracking()
@@ -40,10 +40,10 @@ public class CustomerRepository(ApplicationDbContext _context, ISignInHelper _us
             .Take(pageSize)
             .ToListAsync();
 
-        return new PagedResult<Customer>
+        return new PaginationModel<Customer>
         {
             Items = items,
-            TotalCount = totalCount,
+            TotalItems = totalCount,
             PageNumber = pageNumber,
             PageSize = pageSize
         };
