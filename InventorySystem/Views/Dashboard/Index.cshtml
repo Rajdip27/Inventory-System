@@ -1,0 +1,366 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container-fluid py-2">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold" style="color: var(--text-primary);">Inventory Dashboard</h2>
+            <p style="color: var(--text-muted);">Inventory & Order Management Overview</p>
+        </div>
+    </div>
+    <div class="row g-3 mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="dash-card dash-card--blue">
+                <div class="dash-card-icon"><i class="bi bi-box-seam-fill"></i></div>
+                <div class="dash-card-body">
+                    <div class="dash-card-label">Total Products</div>
+                    <div class="dash-card-value">250</div>
+                    <div class="dash-card-sub">Available Products</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="dash-card dash-card--green">
+                <div class="dash-card-icon"><i class="bi bi-cart-check-fill"></i></div>
+                <div class="dash-card-body">
+                    <div class="dash-card-label">Total Orders</div>
+                    <div class="dash-card-value">1,250</div>
+                    <div class="dash-card-sub">Completed Orders</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="dash-card dash-card--amber">
+                <div class="dash-card-icon"><i class="bi bi-currency-dollar"></i></div>
+                <div class="dash-card-body">
+                    <div class="dash-card-label">Total Sales</div>
+                    <div class="dash-card-value">৳4,58,750</div>
+                    <div class="dash-card-sub">Total Revenue</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="dash-card dash-card--red">
+                <div class="dash-card-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                <div class="dash-card-body">
+                    <div class="dash-card-label">Low Stock Items</div>
+                    <div class="dash-card-value">12</div>
+                    <div class="dash-card-sub">Need Reorder</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row g-3 mb-4">
+
+        <div class="col-lg-4">
+            <div class="stat-mini-card">
+                <div class="stat-mini-label">Today's Orders</div>
+                <div class="stat-mini-value" style="color: var(--brand-primary);">45</div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="stat-mini-card">
+                <div class="stat-mini-label">Pending Orders</div>
+                <div class="stat-mini-value" style="color: var(--warning-text);">18</div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="stat-mini-card">
+                <div class="stat-mini-label">Delivered Orders</div>
+                <div class="stat-mini-value" style="color: var(--success-text);">1,120</div>
+            </div>
+        </div>
+    </div>
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="themed-card">
+                <div class="themed-card-header">
+                    <h5 class="mb-0">Recent Orders</h5>
+                </div>
+                <div class="themed-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="themed-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code class="sku-code">#1001</code></td>
+                                    <td>Rahim Traders</td>
+                                    <td class="text-muted-sm">11-Jun-2026</td>
+                                    <td><strong>৳15,500</strong></td>
+                                    <td><span class="status-badge status-badge--success">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td><code class="sku-code">#1002</code></td>
+                                    <td>Karim Enterprise</td>
+                                    <td class="text-muted-sm">10-Jun-2026</td>
+                                    <td><strong>৳25,750</strong></td>
+                                    <td><span class="status-badge status-badge--info">Processing</span></td>
+                                </tr>
+                                <tr>
+                                    <td><code class="sku-code">#1003</code></td>
+                                    <td>ABC Store</td>
+                                    <td class="text-muted-sm">09-Jun-2026</td>
+                                    <td><strong>৳18,900</strong></td>
+                                    <td><span class="status-badge status-badge--success">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td><code class="sku-code">#1004</code></td>
+                                    <td>XYZ Market</td>
+                                    <td class="text-muted-sm">08-Jun-2026</td>
+                                    <td><strong>৳42,300</strong></td>
+                                    <td><span class="status-badge status-badge--warning">Pending</span></td>
+                                </tr>
+                                <tr>
+                                    <td><code class="sku-code">#1005</code></td>
+                                    <td>Modern Shop</td>
+                                    <td class="text-muted-sm">07-Jun-2026</td>
+                                    <td><strong>৳11,450</strong></td>
+                                    <td><span class="status-badge status-badge--danger">Cancelled</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="themed-card">
+                <div class="themed-card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+                        Low Stock Alert
+                    </h5>
+                </div>
+                <div class="themed-card-body p-0">
+
+                    <div class="stock-item">
+                        <div class="stock-item-info">
+                            <strong>Premium Rice</strong>
+                            <span class="sku-code">SKU: RIC001</span>
+                        </div>
+                        <span class="status-badge status-badge--danger">5 Left</span>
+                    </div>
+
+                    <div class="stock-item">
+                        <div class="stock-item-info">
+                            <strong>Soybean Oil</strong>
+                            <span class="sku-code">SKU: OIL002</span>
+                        </div>
+                        <span class="status-badge status-badge--danger">3 Left</span>
+                    </div>
+
+                    <div class="stock-item">
+                        <div class="stock-item-info">
+                            <strong>Sugar</strong>
+                            <span class="sku-code">SKU: SUG003</span>
+                        </div>
+                        <span class="status-badge status-badge--danger">7 Left</span>
+                    </div>
+
+                    <div class="stock-item">
+                        <div class="stock-item-info">
+                            <strong>Salt</strong>
+                            <span class="sku-code">SKU: SAL004</span>
+                        </div>
+                        <span class="status-badge status-badge--danger">4 Left</span>
+                    </div>
+
+                    <div class="stock-item" style="border-bottom: none;">
+                        <div class="stock-item-info">
+                            <strong>Flour</strong>
+                            <span class="sku-code">SKU: FLO005</span>
+                        </div>
+                        <span class="status-badge status-badge--danger">2 Left</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<style>
+    .dash-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px;
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        background: var(--bg-surface);
+        box-shadow: var(--shadow-sm);
+        transition: background 0.25s, border-color 0.25s, box-shadow 0.2s, transform 0.2s;
+    }
+
+        .dash-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+    .dash-card-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        flex-shrink: 0;
+    }
+
+    .dash-card--blue .dash-card-icon {
+        background: var(--info-bg);
+        color: var(--info-text);
+    }
+
+    .dash-card--green .dash-card-icon {
+        background: var(--success-bg);
+        color: var(--success-text);
+    }
+
+    .dash-card--amber .dash-card-icon {
+        background: var(--warning-bg);
+        color: var(--warning-text);
+    }
+
+    .dash-card--red .dash-card-icon {
+        background: var(--danger-bg);
+        color: var(--danger-text);
+    }
+
+    .dash-card-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+    }
+
+    .dash-card-value {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        line-height: 1.1;
+    }
+
+    .dash-card-sub {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        margin-top: 3px;
+    }
+    .stat-mini-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 20px 24px;
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+        transition: background 0.25s, border-color 0.25s;
+    }
+    .stat-mini-label {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+    }
+
+    .stat-mini-value {
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+    }
+    .themed-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        transition: background 0.25s, border-color 0.25s;
+    }
+
+    .themed-card-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border-color);
+        background: var(--bg-surface-2);
+        color: var(--text-primary);
+        transition: background 0.25s, border-color 0.25s;
+    }
+
+    .themed-card-body {
+        padding: 16px 20px;
+    }
+    .themed-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.84rem;
+    }
+
+        .themed-table thead tr {
+            background: var(--bg-surface-2);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .themed-table th {
+            padding: 10px 16px;
+            text-align: left;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            transition: background 0.25s;
+        }
+
+        .themed-table td {
+            padding: 12px 16px;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+            transition: background 0.15s;
+        }
+
+        .themed-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .themed-table tbody tr:hover td {
+            background: var(--row-hover-bg);
+        }
+    .status-badge--info {
+        background: var(--info-bg);
+        color: var(--info-text);
+    }
+    .stock-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 13px 20px;
+        border-bottom: 1px solid var(--border-color);
+        transition: background 0.15s;
+    }
+        .stock-item:hover {
+            background: var(--row-hover-bg);
+        }
+    .stock-item-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        color: var(--text-primary);
+        font-size: 0.86rem;
+    }
+        .stock-item-info .sku-code {
+            margin-top: 2px;
+        }
+</style>
