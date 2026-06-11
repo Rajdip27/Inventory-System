@@ -21,5 +21,7 @@ namespace InventorySystem.Models
 
         [StringLength(100)]
         public string SerialNumber { get; set; }
+        public ICollection<Warranty> Warranty { get; set; } = new List<Warranty>();
+        public ICollection<ProductSerial> ProductSerial { get; set; } = new List<ProductSerial>();
     }
 }

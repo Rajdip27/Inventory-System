@@ -23,5 +23,7 @@ public class Invoice: AuditableEntity
     public decimal TotalProfit { get; set; }
     public string PaymentStatus { get; set; } = "due";
     public string Notes { get; set; }
-    public ICollection<InvoiceItem> InvoiceItems { get; set; }
+    public ICollection<InvoiceItem> InvoiceItems { get; set; }=new List<InvoiceItem>();
+    public ICollection<Warranty> Warranty { get; set; }=new List<Warranty>();
+    public ICollection<WarrantyClaim> WarrantyClaim { get; set; } = new List<WarrantyClaim>();
 }

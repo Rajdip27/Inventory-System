@@ -16,4 +16,5 @@ public class Warranty: AuditableEntity
     public DateTime WarrantyEndDate { get; set; }
     public string WarrantyStatus { get; set; } = "active";
     public string Notes { get; set; }
+    public ICollection<WarrantyClaim> WarrantyClaim { get; set; } = new List<WarrantyClaim>();
 }

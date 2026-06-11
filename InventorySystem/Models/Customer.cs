@@ -15,5 +15,7 @@ public class Customer: AuditableEntity
     public string Email { get; set; }
 
     public string Address { get; set; }
-
+    public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+    public ICollection<Warranty> Warranty { get; set; } = new List<Warranty>();
+    public ICollection<WarrantyClaim> WarrantyClaim { get; set; } = new List<WarrantyClaim>();
 }

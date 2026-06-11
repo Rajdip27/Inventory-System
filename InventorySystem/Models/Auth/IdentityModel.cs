@@ -15,6 +15,8 @@ namespace InventorySystem.Models.Auth
             public DateTimeOffset CreatedDate { get; set; }
             public long? UpdatedBy { get; set; }
             public DateTimeOffset? UpdatedDate { get; set; }
+            public ICollection<StockEntry> StockEntry { get; set; } = new List<StockEntry>();
+            public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
         }
 
         [Table("UserRoles")]
