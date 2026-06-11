@@ -12,13 +12,7 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
         {
             Id = 1,
             Name = "Administrator",
-            NormalizedName = "ADMINISTRATOR",
-
-        }, new Role
-        {
-            Id = 2,
-            Name = "User",
-            NormalizedName = "USER"
+            NormalizedName = "ADMINISTRATOR"
         });
     }
 }
