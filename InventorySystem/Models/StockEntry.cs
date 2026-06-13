@@ -6,6 +6,8 @@ namespace InventorySystem.Models
 {
     public class StockEntry: AuditableEntity
     {
+        public long SupplierId { get; set; }
+        public Supplier Supplier { get; set; }
         public long ProductId { get; set; }
         public Product Product { get; set; }
         public long UserId { get; set; }
@@ -16,6 +18,8 @@ namespace InventorySystem.Models
         public decimal PurchasePrice { get; set; }
         [StringLength(255)]
         public string Note { get; set; }
+
+        public decimal TotalCost => Quantity * PurchasePrice;
         public DateTime EntryDate { get; set; } = DateTime.Now;
     }
 }
