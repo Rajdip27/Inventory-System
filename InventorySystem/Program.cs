@@ -33,6 +33,7 @@ builder.Services.AddIdentity<User, Role>(options =>
 builder.Services.AddTransient<ISignInHelper, SignInHelper>();
 builder.Services.AddTransient<ICustomerRepository, CustomerRepository>();
 builder.Services.AddTransient<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped(typeof(IAppLogger<>), typeof(AppLogger<>));
 

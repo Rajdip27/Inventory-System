@@ -1,0 +1,138 @@
+﻿@using InventorySystem.Cmmon
+@using InventorySystem.HealperUnit
+@inject ISignInHelper SignInHelper
+@model PaginationModel<Supplier>
+@{
+    string currentSearch = Context.Request.Query["search"].ToString() ?? "";
+    int sl = (Model.PageNumber - 1) * Model.PageSize + 1;
+}
+
+<div class="page-content">
+
+    <!-- TABLE CARD -->
+    <div class="table-card">
+
+        <!-- Header -->
+        <div class="table-card-header">
+            <div>
+                <h5 class="table-card-title">Supplier List</h5>
+                <small class="table-card-subtitle">
+                    Manage all suppliers • @Model?.TotalItems items
+                </small>
+            </div>
+
+            <div class="d-flex gap-3 align-items-center">
+
+                <!-- Search -->
+                <form method="get" class="d-flex gap-2">
+                    <div class="search-field" style="width: 280px;">
+                        <i class="ri-search-line"></i>
+                        <input type="text"
+                               name="search"
+                               class="toolbar-input"
+                               placeholder="Search by supplier, company, phone or email..."
+                               value="@currentSearch" />
+                        <input type="hidden" name="page" value="1" />
+                    </div>
+
+                    <button class="btn btn-primary-sm" type="submit">
+                        <i class="ri-search-line"></i>
+                    </button>
+                </form>
+
+                <!-- Create Button -->
+                <a asp-controller="Supplier"
+                   asp-action="CreateAndEdit"
+                   class="btn btn-primary-sm d-flex align-items-center gap-2">
+                    <i class="ri-add-line"></i> New Supplier
+                </a>
+
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="data-table">
+
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">SL</th>
+                        <th>Name</th>
+                        <th>Company</th>
+                        <th>Contact Person</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>TIN</th>
+                        <th>BIN</th>
+                        <th style="width: 110px;" class="text-center">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model?.Items != null && Model.Items.Any())
+                    {
+                        foreach (var item in Model.Items)
+                        {
+                            <tr>
+
+                                <!-- SL -->
+                                <td class="text-center fw-medium">@sl</td>
+
+                                <!-- Data -->
+                                <td class="fw-semibold">@item.Name</td>
+                                <td>@item.CompanyName</td>
+                                <td>@item.ContactPerson</td>
+                                <td>@item.Phone</td>
+                                <td>@item.Email</td>
+                                <td>@item.TIN</td>
+                                <td>@item.BIN</td>
+
+                                <!-- Actions -->
+                                <td class="text-center">
+                                    <div class="action-btns">
+
+                                        <!-- Edit -->
+                                        <a asp-controller="Supplier"
+                                           asp-action="CreateAndEdit"
+                                           asp-route-id="@item.Id"
+                                           class="action-btn action-btn--edit"
+                                           title="Edit">
+                                            <i class="ri-edit-line"></i>
+                                        </a>
+
+                                        <!-- Delete -->
+                                        <a href="javascript:void(0);"
+                                           class="btn btn-danger btn-sm"
+                                           onclick="confirmDelete('/Supplier/Delete/@item.Id')">
+                                            <i class="ri-delete-bin-6-line"></i>
+                                        </a>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                            sl++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" class="empty-state">
+                                <i class="ri-inbox-line" style="font-size: 42px;"></i>
+                                <p>No suppliers found</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-bar">
+            <partial name="_Pagination" model="Model" />
+        </div>
+
+    </div>
+</div>

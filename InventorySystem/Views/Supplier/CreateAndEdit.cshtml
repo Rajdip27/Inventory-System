@@ -1,0 +1,149 @@
+﻿@using InventorySystem.Cmmon
+@using InventorySystem.HealperUnit
+@inject ISignInHelper SignInHelper
+
+@model Supplier
+
+@{
+    ViewData["Title"] = Model?.Id > 0 ? "Edit Supplier" : "Create New Supplier";
+    string formTitle = Model?.Id > 0 ? "Edit Supplier" : "New Supplier";
+    bool isEdit = Model?.Id > 0;
+}
+
+<div class="page-content">
+    <div class="table-card">
+
+        <!-- Header -->
+        <div class="table-card-header">
+            <div>
+                <h5 class="table-card-title">@formTitle</h5>
+                <small class="table-card-subtitle">
+                    @(isEdit ? "Update supplier information" : "Add a new supplier to the system")
+                </small>
+            </div>
+
+            <div>
+                <a asp-action="Index"
+                   asp-controller="Supplier"
+                   class="btn btn-outline-sm d-flex align-items-center gap-2">
+                    <i class="ri-arrow-left-line"></i> Back to List
+                </a>
+            </div>
+        </div>
+
+        <!-- Form Body -->
+        <div class="p-5">
+            <form asp-action="CreateAndEdit" method="post" class="row g-4">
+
+                @if (isEdit)
+                {
+                    <input type="hidden" asp-for="Id" />
+                }
+
+                <!-- Supplier Name -->
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">Supplier Name <span class="text-danger">*</span></label>
+                    <input asp-for="Name"
+                           class="toolbar-input"
+                           placeholder="Enter supplier name" />
+                    <span asp-validation-for="Name" class="text-danger small mt-1"></span>
+                </div>
+
+                <!-- Company Name -->
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">Company Name</label>
+                    <input asp-for="CompanyName"
+                           class="toolbar-input"
+                           placeholder="Enter company name" />
+                    <span asp-validation-for="CompanyName" class="text-danger small mt-1"></span>
+                </div>
+
+                <!-- Contact Person -->
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">Contact Person</label>
+                    <input asp-for="ContactPerson"
+                           class="toolbar-input"
+                           placeholder="Enter contact person name" />
+                    <span asp-validation-for="ContactPerson" class="text-danger small mt-1"></span>
+                </div>
+
+                <!-- Phone -->
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">Phone <span class="text-danger">*</span></label>
+                    <input asp-for="Phone"
+                           class="toolbar-input"
+                           placeholder="+880 1XXX-XXXXXX" />
+                    <span asp-validation-for="Phone" class="text-danger small mt-1"></span>
+                </div>
+
+                <!-- Email -->
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">Email</label>
+                    <input asp-for="Email"
+                           type="email"
+                           class="toolbar-input"
+                           placeholder="supplier@example.com" />
+                    <span asp-validation-for="Email" class="text-danger small mt-1"></span>
+                </div>
+
+                <!-- Trade License -->
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">Trade License</label>
+                    <input asp-for="TradeLicense"
+                           class="toolbar-input"
+                           placeholder="Trade license number" />
+                    <span asp-validation-for="TradeLicense" class="text-danger small mt-1"></span>
+                </div>
+
+                <!-- TIN -->
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">TIN</label>
+                    <input asp-for="TIN"
+                           class="toolbar-input"
+                           placeholder="Tax Identification Number" />
+                    <span asp-validation-for="TIN" class="text-danger small mt-1"></span>
+                </div>
+
+                <!-- BIN -->
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">BIN</label>
+                    <input asp-for="BIN"
+                           class="toolbar-input"
+                           placeholder="Business Identification Number" />
+                    <span asp-validation-for="BIN" class="text-danger small mt-1"></span>
+                </div>
+
+                <!-- Address -->
+                <div class="col-12">
+                    <label class="form-label fw-medium">Address</label>
+                    <textarea asp-for="Address"
+                              class="toolbar-input"
+                              rows="4"
+                              placeholder="Full supplier address..."></textarea>
+                    <span asp-validation-for="Address" class="text-danger small mt-1"></span>
+                </div>
+
+                <!-- Buttons -->
+                <div class="col-12 d-flex gap-3 pt-4 border-top">
+                    <button type="submit"
+                            class="btn btn-primary-sm d-flex align-items-center gap-2">
+                        <i class="ri-save-line"></i>
+                        @(isEdit ? "Update Supplier" : "Create Supplier")
+                    </button>
+
+                    <a asp-action="Index"
+                       asp-controller="Supplier"
+                       class="btn btn-outline-sm d-flex align-items-center gap-2">
+                        <i class="ri-close-line"></i> Cancel
+                    </a>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

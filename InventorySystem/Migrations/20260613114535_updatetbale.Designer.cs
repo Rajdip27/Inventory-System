@@ -4,6 +4,7 @@ using InventorySystem.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InventorySystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260613114535_updatetbale")]
+    partial class updatetbale
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -246,7 +249,7 @@ namespace InventorySystem.Migrations
                         {
                             Id = 1L,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c7a29edf-0160-40b9-946f-181d8c149da5",
+                            ConcurrencyStamp = "b39c22d6-cb31-4233-b3c5-132e617b43d8",
                             CreatedBy = 0L,
                             CreatedDate = new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "admin@localhost.com",
@@ -254,9 +257,9 @@ namespace InventorySystem.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
                             NormalizedUserName = "ADMIN@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEISmBDsYkYHuWB1i2DyjXX22KEUg8vvdezUqSj61XFx5fUrATJhjMnZSt2pY79O/7Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECsqAkfxEVHnJT8lxL86xvSDMplJSq/w7LHvHX3gRGiB0n9QZZFoeHgni74rDyycWg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "4859c0b8-3a78-424c-8f90-52fb94b9b3c4",
+                            SecurityStamp = "2e4eddf5-4faf-42ee-8cef-731cec9674b4",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost.com"
                         });
@@ -958,7 +961,7 @@ namespace InventorySystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Suppliers");
+                    b.ToTable("Supplier");
                 });
 
             modelBuilder.Entity("InventorySystem.Models.Warranty", b =>

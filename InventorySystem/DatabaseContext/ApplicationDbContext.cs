@@ -31,6 +31,7 @@ public class ApplicationDbContext : IdentityDbContext<User, Role, long, UserClai
     public DbSet<Warranty> Warranties => Set<Warranty>();
     public DbSet<WarrantyClaim> WarrantyClaims => Set<WarrantyClaim>();
     public DbSet<ProductSerial> ProductSerials => Set<ProductSerial>();
+    public DbSet<Supplier> Suppliers => Set<Supplier>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
