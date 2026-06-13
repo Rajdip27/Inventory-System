@@ -1,5 +1,6 @@
 ﻿using InventorySystem.Cmmon;
 using InventorySystem.DatabaseContext;
+using InventorySystem.Extensions;
 using InventorySystem.HealperUnit;
 using InventorySystem.Models;
 using Microsoft.EntityFrameworkCore;
@@ -91,6 +92,10 @@ public class ProductRepository : IProductRepository
     {
         try
         {
+            if (string.IsNullOrEmpty(product.Barcode))
+            {
+                product.Barcode = BarcodeGenerator.Generate();
+            }
             product.CreatedBy = _user.UserId ?? 0;
             product.CreatedDate = DateTimeOffset.UtcNow;
 

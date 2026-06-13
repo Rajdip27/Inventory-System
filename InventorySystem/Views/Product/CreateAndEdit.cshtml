@@ -1,0 +1,115 @@
+﻿@using InventorySystem.Cmmon
+@using InventorySystem.HealperUnit
+@inject ISignInHelper SignInHelper
+
+@model Product
+
+@{
+    ViewData["Title"] = Model?.Id > 0 ? "Edit Product" : "Create New Product";
+    string formTitle = Model?.Id > 0 ? "Edit Product" : "New Product";
+    bool isEdit = Model?.Id > 0;
+}
+
+<div class="page-content">
+    <div class="table-card">
+
+        <!-- Header -->
+        <div class="table-card-header">
+            <div>
+                <h5 class="table-card-title">@formTitle</h5>
+                <small class="table-card-subtitle">
+                    @(isEdit ? "Update product information" : "Add a new product to the system")
+                </small>
+            </div>
+
+            <div>
+                <a asp-action="Index"
+                   class="btn btn-outline-sm d-flex align-items-center gap-2">
+                    <i class="ri-arrow-left-line"></i> Back to List
+                </a>
+            </div>
+        </div>
+
+        <!-- Form Body -->
+        <div class="p-5">
+            <form asp-action="CreateAndEdit" method="post" class="row g-4">
+
+                @if (isEdit)
+                {
+                    <input type="hidden" asp-for="Id" />
+                }
+
+                <!-- Product Name -->
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">Product Name <span class="text-danger">*</span></label>
+                    <input asp-for="ProductName" class="toolbar-input" placeholder="Enter product name" />
+                    <span asp-validation-for="ProductName" class="text-danger small mt-1"></span>
+                </div>
+
+                <!-- SKU -->
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">SKU</label>
+                    <input asp-for="Sku" class="toolbar-input" placeholder="Auto or manual SKU" />
+                    <span asp-validation-for="Sku" class="text-danger small mt-1"></span>
+                </div>
+
+                <!-- Purchase Price -->
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">Purchase Price <span class="text-danger">*</span></label>
+                    <input asp-for="PurchasePrice" type="number" step="0.01" class="toolbar-input" />
+                    <span asp-validation-for="PurchasePrice" class="text-danger small mt-1"></span>
+                </div>
+
+                <!-- Selling Price -->
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">Selling Price <span class="text-danger">*</span></label>
+                    <input asp-for="SellingPrice" type="number" step="0.01" class="toolbar-input" />
+                    <span asp-validation-for="SellingPrice" class="text-danger small mt-1"></span>
+                </div>
+
+                <!-- Warranty -->
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">Warranty (Months)</label>
+                    <input asp-for="WarrantyMonths" type="number" class="toolbar-input" />
+                    <span asp-validation-for="WarrantyMonths" class="text-danger small mt-1"></span>
+                </div>
+
+                <!-- Status -->
+                <div class="col-md-6 d-flex align-items-center">
+                    <div class="form-check mt-4">
+                        <input asp-for="Status" class="form-check-input" />
+                        <label class="form-check-label fw-medium">Active</label>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="col-12">
+                    <label class="form-label fw-medium">Description</label>
+                    <textarea asp-for="Description"
+                              class="toolbar-input"
+                              rows="4"
+                              placeholder="Product description..."></textarea>
+                    <span asp-validation-for="Description" class="text-danger small mt-1"></span>
+                </div>
+
+                <!-- Buttons -->
+                <div class="col-12 d-flex gap-3 pt-4 border-top">
+                    <button type="submit" class="btn btn-primary-sm d-flex align-items-center gap-2">
+                        <i class="ri-save-line"></i>
+                        @(isEdit ? "Update Product" : "Create Product")
+                    </button>
+
+                    <a asp-action="Index"
+                       class="btn btn-outline-sm d-flex align-items-center gap-2">
+                        <i class="ri-close-line"></i> Cancel
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
