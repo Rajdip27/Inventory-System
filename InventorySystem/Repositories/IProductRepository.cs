@@ -15,6 +15,7 @@ public interface IProductRepository
     Task<bool> UpdateAsync(Product product);
     Task<bool> DeleteAsync(int id);
 }
+
 public class ProductRepository : IProductRepository
 {
     private readonly ApplicationDbContext _context;
@@ -33,7 +34,7 @@ public class ProductRepository : IProductRepository
         {
             IQueryable<Product> query = _context.Products
                 .AsNoTracking()
-                .Where(x => x.Status);
+                .Where(x => !x.IsDelete);
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -61,8 +62,9 @@ public class ProductRepository : IProductRepository
                 PageSize = pageSize
             };
         }
-        catch
+        catch (Exception )
         {
+            // TODO: log exception
             return new PaginationModel<Product>
             {
                 Items = new List<Product>(),
@@ -79,10 +81,11 @@ public class ProductRepository : IProductRepository
         try
         {
             return await _context.Products
-                .FirstOrDefaultAsync(x => x.Id == id && x.Status);
+                .FirstOrDefaultAsync(x => x.Id == id && !x.IsDelete);
         }
-        catch
+        catch (Exception )
         {
+            // TODO: log exception
             return null;
         }
     }
@@ -92,20 +95,34 @@ public class ProductRepository : IProductRepository
     {
         try
         {
-            if (string.IsNullOrEmpty(product.Barcode))
+            if (string.IsNullOrWhiteSpace(product.ProductName))
+                return false;
+
+            // Generate UNIQUE barcode if empty
+            if (string.IsNullOrWhiteSpace(product.Barcode))
             {
-                product.Barcode = BarcodeGenerator.Generate();
+                string barcode;
+                do
+                {
+                    barcode = BarcodeGenerator.Generate();
+                }
+                while (await _context.Products.AnyAsync(x => x.Barcode == barcode));
+
+                product.Barcode = barcode;
             }
+
             product.CreatedBy = _user.UserId ?? 0;
             product.CreatedDate = DateTimeOffset.UtcNow;
+            product.IsDelete = false;
 
             await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();
 
             return true;
         }
-        catch
+        catch (Exception )
         {
+            // TODO: log exception
             return false;
         }
     }
@@ -116,18 +133,22 @@ public class ProductRepository : IProductRepository
         try
         {
             var existing = await _context.Products
-                .FirstOrDefaultAsync(x => x.Id == product.Id && x.Status);
+                .FirstOrDefaultAsync(x => x.Id == product.Id && !x.IsDelete);
 
             if (existing == null)
                 return false;
 
-            existing.ProductName = product.ProductName;
-            existing.Sku = product.Sku;
-            existing.Barcode = product.Barcode;
+            if (!string.IsNullOrWhiteSpace(product.ProductName))
+                existing.ProductName = product.ProductName;
+
+            if (!string.IsNullOrWhiteSpace(product.Sku))
+                existing.Sku = product.Sku;
+
             existing.Description = product.Description;
             existing.PurchasePrice = product.PurchasePrice;
             existing.SellingPrice = product.SellingPrice;
             existing.WarrantyMonths = product.WarrantyMonths;
+            existing.Status = product.Status;
 
             existing.ModifiedBy = _user.UserId ?? 0;
             existing.ModifiedDate = DateTimeOffset.UtcNow;
@@ -135,32 +156,35 @@ public class ProductRepository : IProductRepository
             await _context.SaveChangesAsync();
             return true;
         }
-        catch
+        catch (Exception )
         {
+            // TODO: log exception
             return false;
         }
     }
 
-    // DELETE (SOFT DELETE STYLE LIKE YOUR CUSTOMER)
+    // DELETE (SOFT DELETE FIXED)
     public async Task<bool> DeleteAsync(int id)
     {
         try
         {
             var entity = await _context.Products
-                .FirstOrDefaultAsync(x => x.Id == id && x.Status);
+                .FirstOrDefaultAsync(x => x.Id == id && !x.IsDelete);
 
             if (entity == null)
                 return false;
 
-            entity.Status = false; // soft delete
+            entity.IsDelete = true; // FIXED
             entity.ModifiedBy = _user.UserId ?? 0;
             entity.ModifiedDate = DateTimeOffset.UtcNow;
 
             await _context.SaveChangesAsync();
             return true;
         }
-        catch
+        catch (Exception )
         {
+            // TODO: log exception
+
             return false;
         }
     }

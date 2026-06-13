@@ -1,0 +1,108 @@
+﻿@using InventorySystem.Cmmon
+@using InventorySystem.HealperUnit
+@using InventorySystem.ViewModel
+@inject ISignInHelper SignInHelper
+
+@model PurchaseCreateDto
+
+@{
+    ViewData["Title"] = Model?.Id > 0 ? "Edit Purchase" : "Create Purchase";
+    bool isEdit = Model?.Id > 0;
+
+}
+
+<div class="page-content">
+    <div class="table-card">
+
+        <div class="table-card-header">
+            <div>
+                <h5 class="table-card-title">
+                    @(isEdit ? "Edit Purchase" : "New Purchase")
+                </h5>
+            </div>
+
+            <div>
+                <a asp-action="Index" class="btn btn-outline-sm">
+                    <i class="ri-arrow-left-line"></i> Back
+                </a>
+            </div>
+        </div>
+
+        <div class="p-5">
+
+            <form asp-action="CreateAndEdit" method="post" id="purchaseForm">
+
+                @if (isEdit)
+                {
+                    <input type="hidden" asp-for="Id" />
+                }
+
+                <!-- HEADER -->
+                <div class="row g-4">
+
+                    <div class="col-md-4">
+                        <label>Invoice No</label>
+                        <input asp-for="InvoiceNo" class="toolbar-input" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label>Supplier Id</label>
+                        <input asp-for="SupplierId" class="toolbar-input" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label>Purchase Date</label>
+                        <input asp-for="PurchaseDate" type="date" class="toolbar-input" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label>Discount</label>
+                        <input asp-for="Discount" class="toolbar-input" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label>Transport Cost</label>
+                        <input asp-for="TransportCost" class="toolbar-input" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label>Note</label>
+                        <input asp-for="Note" class="toolbar-input" />
+                    </div>
+
+                </div>
+
+                <hr class="my-4" />
+
+                <h5>Purchase Items</h5>
+
+                <div id="itemsContainer"></div>
+
+                <button type="button" id="addItem" class="btn btn-outline-sm mt-3">
+                    <i class="ri-add-line"></i> Add Item
+                </button>
+
+                <div class="d-flex gap-3 pt-4 border-top mt-4">
+                    <button type="submit" class="btn btn-primary-sm">
+                        @(isEdit ? "Update Purchase" : "Save Purchase")
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- PASS DATA TO JS -->
+@if (isEdit)
+{
+    <input type="hidden" id="IsEdit" value="true" />
+    <input type="hidden" id="ItemsJson"
+           value='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Items))' />
+}
+else
+{
+    <input type="hidden" id="IsEdit" value="false" />
+}
+<script src="~/js/purchase.js"></script>
