@@ -1,0 +1,98 @@
+﻿@using InventorySystem.Cmmon
+@using InventorySystem.HealperUnit
+@inject ISignInHelper SignInHelper
+
+@model Customer
+
+@{
+    ViewData["Title"] = Model?.Id > 0 ? "Edit Customer" : "Create New Customer";
+    string formTitle = Model?.Id > 0 ? "Edit Customer" : "New Customer";
+    bool isEdit = Model?.Id > 0;
+}
+
+<div class="page-content">
+    <div class="table-card">
+
+        <!-- Header -->
+        <div class="table-card-header">
+            <div>
+                <h5 class="table-card-title">@formTitle</h5>
+                <small class="table-card-subtitle">
+                    @(isEdit ? "Update customer information" : "Add a new customer to the system")
+                </small>
+            </div>
+
+            <div>
+                <a asp-action="Index"
+                   class="btn btn-outline-sm d-flex align-items-center gap-2">
+                    <i class="ri-arrow-left-line"></i> Back to List
+                </a>
+            </div>
+        </div>
+
+        <!-- Form Body -->
+        <div class="p-5">
+            <form asp-action="@(isEdit ? "CreateAndEdit" : "CreateAndEdit")" method="post" class="row g-4">
+                @if (isEdit)
+                {
+                    <input type="hidden" asp-for="Id" />
+                }
+
+                <!-- Customer Name -->
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">Customer Name <span class="text-danger">*</span></label>
+                    <input asp-for="CustomerName"
+                           class="toolbar-input"
+                           placeholder="Enter full customer name" />
+                    <span asp-validation-for="CustomerName" class="text-danger small mt-1"></span>
+                </div>
+
+                <!-- Phone -->
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">Phone <span class="text-danger">*</span></label>
+                    <input asp-for="Phone"
+                           class="toolbar-input"
+                           placeholder="+880 1XXX-XXXXXX" />
+                    <span asp-validation-for="Phone" class="text-danger small mt-1"></span>
+                </div>
+
+                <!-- Email -->
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">Email</label>
+                    <input asp-for="Email"
+                           type="email"
+                           class="toolbar-input"
+                           placeholder="customer@example.com" />
+                    <span asp-validation-for="Email" class="text-danger small mt-1"></span>
+                </div>
+
+                <!-- Address -->
+                <div class="col-12">
+                    <label class="form-label fw-medium">Address</label>
+                    <textarea asp-for="Address"
+                              class="toolbar-input"
+                              rows="4"
+                              placeholder="Full address with details..."></textarea>
+                    <span asp-validation-for="Address" class="text-danger small mt-1"></span>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="col-12 d-flex gap-3 pt-4 border-top">
+                    <button type="submit" class="btn btn-primary-sm d-flex align-items-center gap-2">
+                        <i class="ri-save-line"></i>
+                        @(isEdit ? "Update Customer" : "Create Customer")
+                    </button>
+
+                    <a asp-action="Index"
+                       class="btn btn-outline-sm d-flex align-items-center gap-2">
+                        <i class="ri-close-line"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

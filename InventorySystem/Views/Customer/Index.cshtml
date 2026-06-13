@@ -41,7 +41,7 @@
 
                 <!-- Create Button -->
                 <a asp-controller="Customer"
-                   asp-action="Create"
+                   asp-action="CreateAndEdit"
                    class="btn btn-primary-sm d-flex align-items-center gap-2">
                     <i class="ri-add-line"></i> New Customer
                 </a>
@@ -78,7 +78,7 @@
                                     <div class="action-btns">
                                         <!-- Edit -->
                                         <a asp-controller="Customer"
-                                           asp-action="Edit"
+                                           asp-action="CreateAndEdit"
                                            asp-route-id="@item.Id"
                                            class="action-btn action-btn--edit"
                                            title="Edit">
@@ -86,7 +86,7 @@
                                         </a>
                                       <a href="javascript:void(0);"
                                         class="btn btn-danger btn-sm"
-                                        onclick="confirmDelete('/Product/Delete/@item.Id')">
+                                           onclick="confirmDelete('/Customer/Delete/@item.Id')">
                                             <i class="ri-delete-bin-6-line"></i>
                                     </a>
                                         <!-- Delete -->

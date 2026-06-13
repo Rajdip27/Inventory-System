@@ -49,6 +49,12 @@
                 <span>Inventory</span>
             </a>
 
+            <a class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Customer" ? "active" : "")"
+               href="/Customer/Index">
+                <i class="bi bi-people-fill nav-icon"></i>
+                <span>Customers</span>
+            </a>
+
             <a class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Orders" ? "active" : "")"
                href="/Orders">
                 <i class="bi bi-cart4 nav-icon"></i>
