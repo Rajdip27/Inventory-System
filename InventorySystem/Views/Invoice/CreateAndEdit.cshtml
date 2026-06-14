@@ -1,0 +1,219 @@
+﻿@using InventorySystem.Cmmon
+@using InventorySystem.HealperUnit
+@using InventorySystem.ViewModel
+@inject ISignInHelper SignInHelper
+@model InvoiceCreateDto
+@{
+    ViewData["Title"] = Model?.Id > 0 ? "Edit Invoice" : "Create New Invoice";
+    string formTitle = Model?.Id > 0 ? "Edit Invoice" : "New Invoice";
+    bool isEdit = Model?.Id > 0;
+
+    var products = ViewBag.Product as IEnumerable<SelectListItem>;
+    var customers = ViewBag.Customer as IEnumerable<SelectListItem>;
+}
+
+<div class="page-content">
+    <div class="table-card">
+
+        <!-- HEADER -->
+        <div class="table-card-header">
+            <div>
+                <h5 class="table-card-title">@formTitle</h5>
+                <small class="table-card-subtitle">
+                    @(isEdit ? "Update invoice information" : "Create a new sales invoice")
+                </small>
+            </div>
+
+            <div>
+                <a asp-action="Index"
+                   class="btn btn-outline-sm d-flex align-items-center gap-2">
+                    <i class="ri-arrow-left-line"></i> Back to List
+                </a>
+            </div>
+        </div>
+
+        <!-- FORM -->
+        <div class="p-5">
+            <form asp-action="CreateAndEdit" method="post" class="row g-4">
+
+                @if (isEdit)
+                {
+                    <input type="hidden" asp-for="Id" />
+                }
+
+                <!-- Invoice No -->
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">Invoice No</label>
+                    <input asp-for="InvoiceNo" class="toolbar-input" readonly />
+                </div>
+
+                <!-- Customer -->
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">Customer <span class="text-danger">*</span></label>
+                    <select asp-for="CustomerId"
+                            class="toolbar-input"
+                            asp-items="customers">
+                        <option value="">-- Select Customer --</option>
+                    </select>
+                    <span asp-validation-for="CustomerId" class="text-danger small"></span>
+                </div>
+
+                <!-- Date -->
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">Invoice Date</label>
+                    <input asp-for="InvoiceDate" type="date" class="toolbar-input" />
+                </div>
+
+                <!-- Paid Amount -->
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">Paid Amount</label>
+                    <input asp-for="PaidAmount" class="toolbar-input" />
+                </div>
+
+                <!-- Notes -->
+                <div class="col-12">
+                    <label class="form-label fw-medium">Notes</label>
+                    <textarea asp-for="Notes"
+                              class="toolbar-input"
+                              rows="3"
+                              placeholder="Optional notes..."></textarea>
+                </div>
+                <div class="col-12 mt-4">
+                    <h6 class="fw-bold">Invoice Items</h6>
+                    <hr />
+                </div>
+
+                <div class="col-12">
+                    <table class="table table-bordered align-middle">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Qty</th>
+                                <th>Unit Price</th>
+                                <th>Selling Price</th>
+                                <th>Tax %</th>
+                                <th>Vat %</th>
+                               
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="itemTable">
+                            @if (Model?.Items != null && Model.Items.Any())
+                            {
+                                for (int i = 0; i < Model.Items.Count; i++)
+                                {
+                                    <tr>
+                                        <td>
+                                            <select name="Items[@i].ProductId"
+                                                    class="toolbar-input"
+                                                    asp-items="products">
+                                            </select>
+                                        </td>
+
+                                        <td>
+                                            <input name="Items[@i].Quantity"
+                                                   value="@Model.Items[i].Quantity"
+                                                   class="toolbar-input" />
+                                        </td>
+
+                                        <td>
+                                            <input name="Items[@i].UnitPrice"
+                                                   value="@Model.Items[i].UnitPrice"
+                                                   class="toolbar-input" />
+                                        </td>
+
+                                        <td>
+                                            <input name="Items[@i].SellingPrice"
+                                                   value="@Model.Items[i].SellingPrice"
+                                                   class="toolbar-input" />
+                                        </td>
+
+                                        <td>
+                                            <input name="Items[@i].TaxPercent"
+                                                   value="@Model.Items[i].TaxPercent"
+                                                   class="toolbar-input" />
+                                        </td>
+
+                                        <td>
+                                            <input name="Items[@i].VatPercent"
+                                                   value="@Model.Items[i].VatPercent"
+                                                   class="toolbar-input" />
+                                        </td>
+
+                                        <td>
+                                            <button type="button"
+                                                    class="btn btn-danger btn-sm remove-item">
+                                                <i class="ri-delete-bin-line"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+
+                    <button type="button" class="btn btn-primary-sm mt-2" id="addRow">
+                        <i class="ri-add-line"></i> Add Item
+                    </button>
+                </div>
+
+                <!-- ACTION BUTTONS -->
+                <div class="col-12 d-flex gap-3 pt-4 border-top mt-4">
+
+                    <button type="submit" class="btn btn-primary-sm d-flex align-items-center gap-2">
+                        <i class="ri-save-line"></i>
+                        @(isEdit ? "Update Invoice" : "Create Invoice")
+                    </button>
+
+                    <a asp-action="Index"
+                       class="btn btn-outline-sm d-flex align-items-center gap-2">
+                        <i class="ri-close-line"></i> Cancel
+                    </a>
+
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        let index = @((Model?.Items?.Count) ?? 0);
+
+        document.getElementById("addRow").addEventListener("click", function () {
+            let row = `
+            <tr>
+                <td>
+                    <select name="Items[${index}].ProductId" class="toolbar-input">
+                        @foreach (var p in products)
+                        {
+                                <option value="@p.Value">@p.Text</option>
+                        }
+                    </select>
+                </td>
+                <td><input name="Items[${index}].Quantity" class="toolbar-input" /></td>
+                <td><input name="Items[${index}].UnitPrice" class="toolbar-input" /></td>
+                <td><input name="Items[${index}].SellingPrice" class="toolbar-input" /></td>
+                <td><input name="Items[${index}].TaxPercent" class="toolbar-input" /></td>
+                <td><input name="Items[${index}].VatPercent" class="toolbar-input" /></td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm remove-item">
+                        <i class="ri-delete-bin-line"></i>
+                    </button>
+                </td>
+            </tr>`;
+            document.getElementById("itemTable").insertAdjacentHTML("beforeend", row);
+            index++;
+        });
+
+        document.addEventListener("click", function (e) {
+            if (e.target.closest(".remove-item")) {
+                e.target.closest("tr").remove();
+            }
+        });
+    </script>
+}

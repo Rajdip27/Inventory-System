@@ -172,7 +172,6 @@ public class InvoiceRepository : IInvoiceRepository
             invoice.GrandTotal = totalSelling + totalTax;
             invoice.DueAmount = invoice.GrandTotal - invoice.PaidAmount;
             invoice.TotalProfit = totalSelling - totalPurchase;
-
             invoice.PaymentStatus =
                 invoice.DueAmount <= 0 ? "paid" :
                 invoice.PaidAmount > 0 ? "partial" : "due";

@@ -18,12 +18,9 @@ public class InvoiceItemCreateDto
 {
     public long ProductId { get; set; }
     public int Quantity { get; set; }
-
     public decimal UnitPrice { get; set; }
     public decimal SellingPrice { get; set; }
-
     public decimal TaxPercent { get; set; }
     public decimal VatPercent { get; set; }
-
-    public string SerialNumber { get; set; }
+    public string SerialNumber { get; set; } = Guid.NewGuid().ToString("N");
 }
