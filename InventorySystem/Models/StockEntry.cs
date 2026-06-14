@@ -21,6 +21,8 @@ namespace InventorySystem.Models
 
         [Required]
         public decimal PurchasePrice { get; set; }
+        public long PurchaseId { get; set; }
+        public Purchase Purchase { get; set; }
 
         public decimal SalePrice { get; set; }
 

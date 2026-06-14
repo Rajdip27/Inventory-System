@@ -3,6 +3,23 @@
 @using System.Text.Json
 
 @model PurchaseCreateDto
+<style>
+    button.remove-item {
+        position: relative;
+        overflow: hidden;
+    }
+
+        button.remove-item::after {
+            content: "";
+            position: absolute;
+            left: 5px;
+            right: 5px;
+            top: 50%;
+            height: 1px;
+            background: #fff;
+            transform: translateY(-50%);
+        }
+</style>
 
 @{
     ViewData["Title"] = Model?.Id > 0 ? "Edit Purchase" : "Create Purchase";

@@ -115,6 +115,7 @@ public class PurchaseRepository : IPurchaseRepository
             {
                 var entry = new StockEntry
                 {
+                    
                     SupplierId = dto.SupplierId,
                     ProductId = item.ProductId,
                     UserId = _user.UserId ?? 0,
@@ -130,7 +131,9 @@ public class PurchaseRepository : IPurchaseRepository
                     BatchNo = item.BatchNo,
                     ExpiryDate = item.ExpiryDate,
                     Note = dto.Note,
-                    CreatedDate = DateTimeOffset.UtcNow
+                    CreatedDate = DateTimeOffset.UtcNow,
+                    PurchaseId = purchase.Id
+
                 };
 
                 stockEntries.Add(entry);
@@ -228,7 +231,8 @@ public class PurchaseRepository : IPurchaseRepository
                     BatchNo = item.BatchNo,
                     ExpiryDate = item.ExpiryDate,
                     Note = dto.Note,
-                    CreatedDate = DateTimeOffset.UtcNow
+                    CreatedDate = DateTimeOffset.UtcNow,
+                    PurchaseId = purchase.Id
                 };
 
                 stockEntries.Add(entry);

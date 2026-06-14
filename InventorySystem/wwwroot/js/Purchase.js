@@ -167,16 +167,11 @@
                 </div>
 
                 <div class="col-md-3 d-flex align-items-end">
-
-                    <button type="button"
-                            class="btn btn-danger-sm remove-item">
-
-                        <i class="ri-delete-bin-line"></i>
-                        Remove
-
-                    </button>
-
-                </div>
+    <button type="button" class="btn btn-danger btn-sm remove-item">
+        <i class="ri-delete-bin-line"></i>
+        
+    </button>
+</div>
 
             </div>
 
