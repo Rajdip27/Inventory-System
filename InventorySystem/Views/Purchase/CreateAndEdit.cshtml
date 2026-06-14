@@ -1,7 +1,6 @@
-﻿@using InventorySystem.Cmmon
-@using InventorySystem.HealperUnit
-@using InventorySystem.ViewModel
-@inject ISignInHelper SignInHelper
+﻿@using InventorySystem.ViewModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using System.Text.Json
 
 @model PurchaseCreateDto
 
@@ -9,6 +8,12 @@
     ViewData["Title"] = Model?.Id > 0 ? "Edit Purchase" : "Create Purchase";
     bool isEdit = Model?.Id > 0;
 
+    var products = ((IEnumerable<SelectListItem>)ViewBag.Product)
+        .Select(x => new
+        {
+            value = x.Value,
+            text = x.Text
+        });
 }
 
 <div class="page-content">
@@ -19,73 +24,135 @@
                 <h5 class="table-card-title">
                     @(isEdit ? "Edit Purchase" : "New Purchase")
                 </h5>
+
+                <small class="table-card-subtitle">
+                    @(isEdit
+                        ? "Update purchase information"
+                        : "Create new purchase entry")
+                </small>
             </div>
 
             <div>
-                <a asp-action="Index" class="btn btn-outline-sm">
-                    <i class="ri-arrow-left-line"></i> Back
+                <a asp-action="Index"
+                   class="btn btn-outline-sm">
+                    <i class="ri-arrow-left-line"></i>
+                    Back
                 </a>
             </div>
         </div>
 
         <div class="p-5">
 
-            <form asp-action="CreateAndEdit" method="post" id="purchaseForm">
+            <form asp-action="CreateAndEdit" method="post">
 
                 @if (isEdit)
                 {
                     <input type="hidden" asp-for="Id" />
                 }
 
-                <!-- HEADER -->
                 <div class="row g-4">
 
                     <div class="col-md-4">
-                        <label>Invoice No</label>
-                        <input asp-for="InvoiceNo" class="toolbar-input" />
+                        <label class="form-label fw-medium">
+                            Invoice No
+                        </label>
+
+                        <input asp-for="InvoiceNo"
+                               class="toolbar-input" />
                     </div>
 
                     <div class="col-md-4">
-                        <label>Supplier Id</label>
-                        <input asp-for="SupplierId" class="toolbar-input" />
+                        <label class="form-label fw-medium">
+                            Supplier
+                        </label>
+
+                        <select asp-for="SupplierId"
+                                asp-items="ViewBag.Supplier"
+                                class="toolbar-input">
+                            <option value="">Select Supplier</option>
+                        </select>
                     </div>
 
                     <div class="col-md-4">
-                        <label>Purchase Date</label>
-                        <input asp-for="PurchaseDate" type="date" class="toolbar-input" />
+                        <label class="form-label fw-medium">
+                            Purchase Date
+                        </label>
+
+                        <input asp-for="PurchaseDate"
+                               type="date"
+                               class="toolbar-input" />
                     </div>
 
                     <div class="col-md-4">
-                        <label>Discount</label>
-                        <input asp-for="Discount" class="toolbar-input" />
+                        <label class="form-label fw-medium">
+                            Discount
+                        </label>
+
+                        <input asp-for="Discount"
+                               class="toolbar-input" />
                     </div>
 
                     <div class="col-md-4">
-                        <label>Transport Cost</label>
-                        <input asp-for="TransportCost" class="toolbar-input" />
+                        <label class="form-label fw-medium">
+                            Transport Cost
+                        </label>
+
+                        <input asp-for="TransportCost"
+                               class="toolbar-input" />
                     </div>
 
                     <div class="col-md-4">
-                        <label>Note</label>
-                        <input asp-for="Note" class="toolbar-input" />
+                        <label class="form-label fw-medium">
+                            Note
+                        </label>
+
+                        <input asp-for="Note"
+                               class="toolbar-input" />
                     </div>
 
                 </div>
 
                 <hr class="my-4" />
 
-                <h5>Purchase Items</h5>
+                <div class="table-card">
+                    <div class="table-card-header">
 
-                <div id="itemsContainer"></div>
+                        <div>
+                            <h5 class="table-card-title">
+                                Purchase Items
+                            </h5>
+                        </div>
 
-                <button type="button" id="addItem" class="btn btn-outline-sm mt-3">
-                    <i class="ri-add-line"></i> Add Item
-                </button>
+                        <button type="button"
+                                id="addItem"
+                                class="btn btn-primary-sm">
+                            <i class="ri-add-line"></i>
+                            Add Item
+                        </button>
 
-                <div class="d-flex gap-3 pt-4 border-top mt-4">
-                    <button type="submit" class="btn btn-primary-sm">
-                        @(isEdit ? "Update Purchase" : "Save Purchase")
+                    </div>
+
+                    <div class="p-4">
+                        <div id="itemsContainer"></div>
+                    </div>
+                </div>
+
+                <div class="col-12 d-flex gap-3 pt-4 border-top mt-4">
+
+                    <button type="submit"
+                            class="btn btn-primary-sm">
+                        <i class="ri-save-line"></i>
+
+                        @(isEdit
+                            ? "Update Purchase"
+                            : "Save Purchase")
                     </button>
+
+                    <a asp-action="Index"
+                       class="btn btn-outline-sm">
+                        Cancel
+                    </a>
+
                 </div>
 
             </form>
@@ -94,15 +161,17 @@
     </div>
 </div>
 
-<!-- PASS DATA TO JS -->
-@if (isEdit)
-{
-    <input type="hidden" id="IsEdit" value="true" />
-    <input type="hidden" id="ItemsJson"
-           value='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Items))' />
-}
-else
-{
-    <input type="hidden" id="IsEdit" value="false" />
-}
+<script>
+
+    var products =
+    @Html.Raw(JsonSerializer.Serialize(products));
+
+    var purchaseItems =
+    @Html.Raw(JsonSerializer.Serialize(Model.Items ?? new List<PurchaseItemDto>()));
+
+    var isEdit =
+    @Html.Raw(JsonSerializer.Serialize(isEdit));
+
+</script>
+
 <script src="~/js/purchase.js"></script>

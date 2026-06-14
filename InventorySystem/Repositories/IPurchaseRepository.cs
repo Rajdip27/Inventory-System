@@ -3,6 +3,7 @@ using InventorySystem.DatabaseContext;
 using InventorySystem.HealperUnit;
 using InventorySystem.Models;
 using InventorySystem.ViewModel;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace InventorySystem.Repositories;
@@ -13,6 +14,8 @@ public interface IPurchaseRepository
     Task<Purchase> GetByIdAsync(long id);
     Task<bool> AddAsync(PurchaseCreateDto dto);
     Task<bool> UpdateAsync( PurchaseCreateDto dto);
+    Task<IEnumerable<SelectListItem>> ProductDropdwon();
+    Task<IEnumerable<SelectListItem>> SupplierDropdwon();
 }
 
 public class PurchaseRepository : IPurchaseRepository
@@ -44,6 +47,7 @@ public class PurchaseRepository : IPurchaseRepository
 
             var items = await query
                 .Include(x => x.StockEntries)
+                .Include(x=>x.Supplier)
                 .OrderByDescending(x => x.Id)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
@@ -264,5 +268,33 @@ public class PurchaseRepository : IPurchaseRepository
             await transaction.RollbackAsync();
             return false;
         }
+    }
+
+    public async Task<IEnumerable<SelectListItem>> ProductDropdwon()
+    {
+        var query = _context.Products
+                        .Where(x => !x.IsDelete);
+        var list = await query
+            .Select(x => new SelectListItem
+            {
+                Text = x.ProductName,
+                Value = x.Id.ToString()
+            })
+            .ToListAsync();
+        return list;
+    }
+
+    public async Task<IEnumerable<SelectListItem>> SupplierDropdwon()
+    {
+        var query = _context.Suppliers
+                       .Where(x => !x.IsDelete);
+        var list = await query
+            .Select(x => new SelectListItem
+            {
+                Text = x.Name,
+                Value = x.Id.ToString()
+            })
+            .ToListAsync();
+        return list;
     }
 }

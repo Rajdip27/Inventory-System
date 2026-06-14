@@ -30,6 +30,8 @@ public class PurchaseController : Controller
     [HttpGet]
     public async Task<IActionResult> CreateAndEdit(long? id)
     {
+        ViewBag.Product = await _repo.ProductDropdwon();
+        ViewBag.Supplier = await _repo.SupplierDropdwon();
         _logger.LogInfo($"CreateAndEdit GET called | id: {id}");
 
         if (id == null || id == 0)
@@ -53,16 +55,18 @@ public class PurchaseController : Controller
 
         _logger.LogInfo($"Editing Purchase | id: {id}");
 
-        // Map entity → DTO (for edit form)
         var dto = new PurchaseCreateDto
         {
+            Id = purchase.Id, // Required
+
             InvoiceNo = purchase.InvoiceNo,
             SupplierId = purchase.SupplierId,
             PurchaseDate = purchase.PurchaseDate,
             Discount = purchase.Discount,
             TransportCost = purchase.TransportCost,
             Note = purchase.Note,
-            Items = purchase.StockEntries?.Select(x => new PurchaseItemDto
+
+            Items = purchase.StockEntries.Select(x => new PurchaseItemDto
             {
                 ProductId = x.ProductId,
                 Quantity = x.Quantity,
@@ -73,7 +77,7 @@ public class PurchaseController : Controller
                 TransportCost = x.TransportCost,
                 BatchNo = x.BatchNo,
                 ExpiryDate = x.ExpiryDate
-            }).ToList() ?? new List<PurchaseItemDto>()
+            }).ToList()
         };
 
         return View(dto);

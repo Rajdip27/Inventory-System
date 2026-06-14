@@ -2,115 +2,235 @@
 
     let index = 0;
 
-    // =========================
-    // ADD ROW BUTTON
-    // =========================
     $("#addItem").click(function () {
-        addRow("", "", "", "", "", "", "", "", "");
+
+        addRow(
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        );
     });
 
-    // =========================
-    // CREATE ROW
-    // =========================
-    function addRow(productId, qty, pPrice, sPrice, discount, tax, transport, batch, expiry) {
+    function addRow(
+        productId,
+        qty,
+        pPrice,
+        sPrice,
+        discount,
+        tax,
+        transport,
+        batch,
+        expiry
+    ) {
+
+        let productOptions =
+            '<option value="">Select Product</option>';
+
+        products.forEach(function (p) {
+
+            let selected =
+                productId &&
+                    productId.toString() === p.value.toString()
+                    ? "selected"
+                    : "";
+
+            productOptions += `
+                <option value="${p.value}" ${selected}>
+                    ${p.text}
+                </option>`;
+        });
 
         let row = `
-        <div class="row g-3 item-row mb-3">
+        <div class="item-row border rounded p-3 mb-3">
 
-            <div class="col-md-2">
-                <label class="form-label">Product Id</label>
-                <input name="Items[${index}].ProductId" value="${productId}" class="toolbar-input" />
-            </div>
+            <div class="row g-3">
 
-            <div class="col-md-1">
-                <label class="form-label">Qty</label>
-                <input name="Items[${index}].Quantity" value="${qty}" class="toolbar-input" />
-            </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">
+                        Product
+                    </label>
 
-            <div class="col-md-2">
-                <label class="form-label">Purchase Price</label>
-                <input name="Items[${index}].PurchasePrice" value="${pPrice}" class="toolbar-input" />
-            </div>
+                    <select
+                        name="Items[${index}].ProductId"
+                        class="toolbar-input">
 
-            <div class="col-md-2">
-                <label class="form-label">Sale Price</label>
-                <input name="Items[${index}].SalePrice" value="${sPrice}" class="toolbar-input" />
-            </div>
+                        ${productOptions}
 
-            <div class="col-md-1">
-                <label class="form-label">Discount</label>
-                <input name="Items[${index}].Discount" value="${discount}" class="toolbar-input" />
-            </div>
+                    </select>
+                </div>
 
-            <div class="col-md-1">
-                <label class="form-label">Tax</label>
-                <input name="Items[${index}].TaxAmount" value="${tax}" class="toolbar-input" />
-            </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-medium">
+                        Quantity
+                    </label>
 
-            <div class="col-md-1">
-                <label class="form-label">Transport</label>
-                <input name="Items[${index}].TransportCost" value="${transport}" class="toolbar-input" />
-            </div>
+                    <input
+                        type="number"
+                        name="Items[${index}].Quantity"
+                        value="${qty ?? ''}"
+                        class="toolbar-input" />
+                </div>
 
-            <div class="col-md-2">
-                <label class="form-label">Batch No</label>
-                <input name="Items[${index}].BatchNo" value="${batch}" class="toolbar-input" />
-            </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-medium">
+                        Purchase Price
+                    </label>
 
-            <div class="col-md-2">
-                <label class="form-label">Expiry</label>
-                <input type="date" name="Items[${index}].ExpiryDate" value="${expiry}" class="toolbar-input" />
-            </div>
+                    <input
+                        type="number"
+                        step="0.01"
+                        name="Items[${index}].PurchasePrice"
+                        value="${pPrice ?? ''}"
+                        class="toolbar-input" />
+                </div>
 
-            <div class="col-md-1 d-flex align-items-end">
-                <button type="button" class="btn btn-danger btn-sm remove-item">
-                    X
-                </button>
+                <div class="col-md-3">
+                    <label class="form-label fw-medium">
+                        Sale Price
+                    </label>
+
+                    <input
+                        type="number"
+                        step="0.01"
+                        name="Items[${index}].SalePrice"
+                        value="${sPrice ?? ''}"
+                        class="toolbar-input" />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-medium">
+                        Discount
+                    </label>
+
+                    <input
+                        type="number"
+                        step="0.01"
+                        name="Items[${index}].Discount"
+                        value="${discount ?? ''}"
+                        class="toolbar-input" />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-medium">
+                        Tax
+                    </label>
+
+                    <input
+                        type="number"
+                        step="0.01"
+                        name="Items[${index}].TaxAmount"
+                        value="${tax ?? ''}"
+                        class="toolbar-input" />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-medium">
+                        Transport
+                    </label>
+
+                    <input
+                        type="number"
+                        step="0.01"
+                        name="Items[${index}].TransportCost"
+                        value="${transport ?? ''}"
+                        class="toolbar-input" />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-medium">
+                        Batch No
+                    </label>
+
+                    <input
+                        type="text"
+                        name="Items[${index}].BatchNo"
+                        value="${batch ?? ''}"
+                        class="toolbar-input" />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-medium">
+                        Expiry Date
+                    </label>
+
+                    <input
+                        type="date"
+                        name="Items[${index}].ExpiryDate"
+                        value="${expiry ?? ''}"
+                        class="toolbar-input" />
+                </div>
+
+                <div class="col-md-3 d-flex align-items-end">
+
+                    <button type="button"
+                            class="btn btn-danger-sm remove-item">
+
+                        <i class="ri-delete-bin-line"></i>
+                        Remove
+
+                    </button>
+
+                </div>
+
             </div>
 
         </div>`;
 
         $("#itemsContainer").append(row);
+
         index++;
     }
 
-    // =========================
-    // REMOVE ROW
-    // =========================
-    $(document).on("click", ".remove-item", function () {
-        $(this).closest(".item-row").remove();
-    });
+    $(document).on(
+        "click",
+        ".remove-item",
+        function () {
 
-    // =========================
-    // EDIT MODE LOAD
-    // =========================
-    let isEdit = $("#IsEdit").val() === "true";
+            $(this)
+                .closest(".item-row")
+                .remove();
+        });
 
-    if (isEdit) {
+    if (isEdit && purchaseItems.length > 0) {
 
-        let itemsJson = $("#ItemsJson").val();
+        purchaseItems.forEach(function (it) {
 
-        if (itemsJson) {
+            addRow(
+                it.productId ?? it.ProductId,
+                it.quantity ?? it.Quantity,
+                it.purchasePrice ?? it.PurchasePrice,
+                it.salePrice ?? it.SalePrice,
+                it.discount ?? it.Discount,
+                it.taxAmount ?? it.TaxAmount,
+                it.transportCost ?? it.TransportCost,
+                it.batchNo ?? it.BatchNo,
+                (it.expiryDate ?? it.ExpiryDate)
+                    ? (it.expiryDate ?? it.ExpiryDate)
+                        .split('T')[0]
+                    : ""
+            );
 
-            let items = JSON.parse(itemsJson);
+        });
 
-            for (let i = 0; i < items.length; i++) {
+    } else {
 
-                let it = items[i];
-
-                addRow(
-                    it.ProductId,
-                    it.Quantity,
-                    it.PurchasePrice,
-                    it.SalePrice,
-                    it.Discount,
-                    it.TaxAmount,
-                    it.TransportCost,
-                    it.BatchNo,
-                    it.ExpiryDate ? it.ExpiryDate.split('T')[0] : ""
-                );
-            }
-        }
+        addRow(
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        );
     }
 
 });
