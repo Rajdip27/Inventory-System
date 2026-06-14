@@ -12,16 +12,17 @@ namespace InventorySystem.Models
         [Required]
         public int Quantity { get; set; }
         [Required]
-        public decimal PurchasePrice { get; set; }
+        public decimal SellingPrice { get; set; }
         [Required]
         public decimal UnitPrice { get; set; }
         public decimal TaxPercent { get; set; }
+        public decimal VatPercent { get; set; }
+        public decimal VatAmount { get; set; }
         public decimal TaxAmount { get; set; }
         public decimal TotalAmount { get; set; }
-
         [StringLength(100)]
         public string SerialNumber { get; set; }
         public ICollection<Warranty> Warranty { get; set; } = new List<Warranty>();
-        public ICollection<ProductSerial> ProductSerial { get; set; } = new List<ProductSerial>();
+
     }
 }

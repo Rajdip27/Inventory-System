@@ -22,5 +22,5 @@ public class Product: AuditableEntity
     public ICollection<StockLedger> StockLedger { get; set; } = new List<StockLedger>();
     public ICollection<InvoiceItem> InvoiceItems { get; set; } = new List<InvoiceItem>();
     public ICollection<WarrantyClaim> WarrantyClaim { get; set; } = new List<WarrantyClaim>();
-    public ICollection<ProductSerial> ProductSerial { get; set; } = new List<ProductSerial>();
+    
 }
