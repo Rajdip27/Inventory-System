@@ -38,7 +38,7 @@ public class CustomerRepository : ICustomerRepository
                 search = search.Trim();
 
                 query = query.Where(x =>
-                    EF.Functions.Like(x.CustomerName, $"%{search}%") ||
+                    EF.Functions.Like(x.Name, $"%{search}%") ||
                     EF.Functions.Like(x.Phone, $"%{search}%") ||
                     EF.Functions.Like(x.Email, $"%{search}%"));
             }
@@ -111,7 +111,7 @@ public class CustomerRepository : ICustomerRepository
             if (existing == null)
                 return false;
 
-            existing.CustomerName = customer.CustomerName;
+            existing.Name = customer.Name;
             existing.Phone = customer.Phone;
             existing.Email = customer.Email;
             existing.Address = customer.Address;

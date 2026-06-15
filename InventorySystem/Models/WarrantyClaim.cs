@@ -4,25 +4,20 @@ namespace InventorySystem.Models;
 
 public class WarrantyClaim: AuditableEntity 
 {
-    public long WarrantyId { get; set; }
-    public Warranty Warranty { get; set; }
-
+    public string ClaimNo { get; set; }
+    public long WarrantyItemId { get; set; }
+    public WarrantyItem WarrantyItem { get; set; }
     public long CustomerId { get; set; }
     public Customer Customer { get; set; }
-
-    public long ProductId { get; set; }
-    public Product Product { get; set; }
-
-    public long InvoiceId { get; set; }
-    public Invoice Invoice { get; set; }
-
-    public DateTime ClaimDate { get; set; } = DateTime.Now;
-
+    public DateTime ClaimDate { get; set; }
     public string IssueDescription { get; set; }
 
-    public string ClaimStatus { get; set; } = "pending";
-
-    public string ResolutionNote { get; set; }
-
+    public string ActionTaken { get; set; }
+    // Replace, Repair, Reject
+    public string Status { get; set; }
+    // Pending, Approved, Rejected, Completed
     public DateTime? ResolvedDate { get; set; }
+
+    public ICollection<WarrantyHistory> WarrantyHistory { get; set; }
+= new List<WarrantyHistory>();
 }

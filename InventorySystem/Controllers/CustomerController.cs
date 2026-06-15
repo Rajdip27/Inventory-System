@@ -70,7 +70,7 @@ public class CustomerController : Controller
                 _logger.LogInfo("Creating new Customer");
                 result = await _repo.AddAsync(model);
                 if (result)
-                    _logger.LogInfo($"Customer created successfully | name: {model.CustomerName}");
+                    _logger.LogInfo($"Customer created successfully | name: {model.Name}");
                 else
                     _logger.LogError("Failed to create customer", null);
             }

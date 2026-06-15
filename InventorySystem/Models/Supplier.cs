@@ -13,6 +13,9 @@ namespace InventorySystem.Models
         public string TradeLicense { get; set; }
         public string TIN { get; set; }
         public string BIN { get; set; }
-        public ICollection<StockEntry> StockEntry { get; set; } = new List<StockEntry>();
+        public decimal OpeningBalance { get; set; } = 0;
+        public ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
+        public ICollection<SupplierLedger> Ledgers { get; set; }= new List<SupplierLedger>();
+        public ICollection<SupplierPayment> SupplierPayment { get; set; }= new List<SupplierPayment>();
     }
 }

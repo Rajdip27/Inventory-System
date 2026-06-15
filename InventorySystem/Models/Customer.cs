@@ -6,16 +6,18 @@ namespace InventorySystem.Models;
 public class Customer: AuditableEntity
 {
     [Required, StringLength(150)]
-    public string CustomerName { get; set; }
+    public string Name { get; set; }
 
     [StringLength(20)]
     public string Phone { get; set; }
 
     [StringLength(150)]
     public string Email { get; set; }
-
+    public decimal OpeningBalance { get; set; } = 0;
     public string Address { get; set; }
-    public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
     public ICollection<Warranty> Warranty { get; set; } = new List<Warranty>();
-    public ICollection<WarrantyClaim> WarrantyClaim { get; set; } = new List<WarrantyClaim>();
+    public ICollection<CustomerLedger> CustomerLedger { get; set; } = new List<CustomerLedger>();
+    public ICollection<CustomerPayment> CustomerPayment { get; set; } = new List<CustomerPayment>();
+    public ICollection<WarrantyClaim> WarrantyClaim { get; set; }
+= new List<WarrantyClaim>();
 }

@@ -24,10 +24,7 @@ public class ApplicationDbContext : IdentityDbContext<User, Role, long, UserClai
     public DbSet<RouteLog> RouteLogs => Set<RouteLog>();
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<Product> Products => Set<Product>();
-    public DbSet<StockEntry> StockEntries => Set<StockEntry>();
     public DbSet<StockLedger> StockLedgers => Set<StockLedger>();
-    public DbSet<Invoice> Invoices => Set<Invoice>();
-    public DbSet<InvoiceItem> InvoiceItems => Set<InvoiceItem>();
     public DbSet<Warranty> Warranties => Set<Warranty>();
     public DbSet<WarrantyClaim> WarrantyClaims => Set<WarrantyClaim>();
     public DbSet<Supplier> Suppliers => Set<Supplier>();
