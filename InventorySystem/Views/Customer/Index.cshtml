@@ -57,6 +57,7 @@
                         <th>Customer Name</th>
                         <th>Phone</th>
                         <th>Email</th>
+                        <th>Opening Balance</th>
                         <th>Address</th>
                         <th style="width: 110px;" class="text-center">Actions</th>
                     </tr>
@@ -71,6 +72,7 @@
                                 <td class="fw-semibold">@item.Name</td>
                                 <td>@item.Phone</td>
                                 <td>@item.Email</td>
+                                <td>@item.OpeningBalance.ToString("F2")</td>
                                 <td class="text-truncate" style="max-width: 260px;" title="@item.Address">
                                     @item.Address
                                 </td>
@@ -98,7 +100,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="6" class="empty-state">
+                            <td colspan="7" class="empty-state">
                                 <i class="ri-inbox-line" style="font-size: 42px;"></i>
                                 <p>No customers found</p>
                             </td>

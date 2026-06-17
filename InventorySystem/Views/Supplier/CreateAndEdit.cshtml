@@ -113,6 +113,15 @@
                     <span asp-validation-for="BIN" class="text-danger small mt-1"></span>
                 </div>
 
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">Opening Balance</label>
+                    <input asp-for="OpeningBalance"
+                           type="number"
+                           class="toolbar-input"
+                           placeholder="0.00" />
+                    <span asp-validation-for="OpeningBalance" class="text-danger small mt-1"></span>
+                </div>
+
                 <!-- Address -->
                 <div class="col-12">
                     <label class="form-label fw-medium">Address</label>

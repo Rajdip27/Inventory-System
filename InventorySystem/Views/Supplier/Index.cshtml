@@ -64,6 +64,7 @@
                         <th>Email</th>
                         <th>TIN</th>
                         <th>BIN</th>
+                        <th>Opening Balance</th>
                         <th style="width: 110px;" class="text-center">Actions</th>
                     </tr>
                 </thead>
@@ -86,6 +87,7 @@
                                 <td>@item.Email</td>
                                 <td>@item.TIN</td>
                                 <td>@item.BIN</td>
+                                <td>@item.OpeningBalance.ToString("F2")</td>
 
                                 <!-- Actions -->
                                 <td class="text-center">
@@ -118,7 +120,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="9" class="empty-state">
+                            <td colspan="10" class="empty-state">
                                 <i class="ri-inbox-line" style="font-size: 42px;"></i>
                                 <p>No suppliers found</p>
                             </td>

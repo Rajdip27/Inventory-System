@@ -30,6 +30,20 @@ public class ApplicationDbContext : IdentityDbContext<User, Role, long, UserClai
     public DbSet<Supplier> Suppliers => Set<Supplier>();
     public DbSet<Purchase> Purchases => Set<Purchase>();
     public DbSet<CustomerLedger> CustomerLedgers => Set<CustomerLedger>();
+    // SALES
+    public DbSet<SalesInvoice> SalesInvoices => Set<SalesInvoice>();
+    public DbSet<SalesItem> SalesItems => Set<SalesItem>();
+    // PURCHASE DETAILS
+    public DbSet<PurchaseItem> PurchaseItems => Set<PurchaseItem>();
+    // PAYMENTS
+    public DbSet<CustomerPayment> CustomerPayments => Set<CustomerPayment>();
+    public DbSet<SupplierPayment> SupplierPayments => Set<SupplierPayment>();
+    // LEDGERS
+    public DbSet<SupplierLedger> SupplierLedgers => Set<SupplierLedger>();
+    // WAREHOUSE
+    public DbSet<Warehouse> Warehouses => Set<Warehouse>();
+    // WARRANTY EXTENSION
+    public DbSet<WarrantyItem> WarrantyItems => Set<WarrantyItem>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

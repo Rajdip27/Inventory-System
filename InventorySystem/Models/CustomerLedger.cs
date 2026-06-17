@@ -9,17 +9,22 @@ namespace InventorySystem.Models
 
         public DateTime TransactionDate { get; set; }
 
-        public string ReferenceType { get; set; } // Invoice, Payment, Opening
+        public string ReferenceType { get; set; } // Opening, Invoice, Payment
+
         public long? ReferenceId { get; set; }
 
         public string Description { get; set; }
 
-        // Debit = Customer owes you
+        // Opening Balance before this transaction
+        public decimal OpeningBalance { get; set; }
+
+        // Customer owes you
         public decimal Debit { get; set; }
 
-        // Credit = Customer paid you
+        // Customer paid you
         public decimal Credit { get; set; }
 
-        public decimal Balance { get; set; }
+        // Balance after transaction
+        public decimal ClosingBalance { get; set; }
     }
 }

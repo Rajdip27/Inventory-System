@@ -86,23 +86,51 @@ public class CustomerRepository : ICustomerRepository
 
     public async Task<bool> AddAsync(Customer customer)
     {
+        await using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
             customer.CreatedBy = _user.UserId ?? 0;
             customer.CreatedDate = DateTimeOffset.UtcNow;
-
             await _context.Customers.AddAsync(customer);
             await _context.SaveChangesAsync();
+
+            if (customer.OpeningBalance != 0)
+            {
+                var ledger = new CustomerLedger
+                {
+                    CustomerId = customer.Id,
+                    TransactionDate = DateTime.Now,
+                    ReferenceType = "Opening",
+                    ReferenceId = customer.Id,
+                    Description = "Customer Opening Balance",
+
+                    OpeningBalance = 0,
+                    Debit = customer.OpeningBalance,
+                    Credit = 0,
+                    ClosingBalance = customer.OpeningBalance,
+
+                    CreatedBy = _user.UserId ?? 0,
+                    CreatedDate = DateTimeOffset.UtcNow
+                };
+
+                await _context.CustomerLedgers.AddAsync(ledger);
+                await _context.SaveChangesAsync();
+            }
+
+            await transaction.CommitAsync();
+
             return true;
         }
         catch
         {
+            await transaction.RollbackAsync();
             return false;
         }
     }
 
     public async Task<bool> UpdateAsync(Customer customer)
     {
+        await using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
             var existing = await _context.Customers
@@ -115,37 +143,129 @@ public class CustomerRepository : ICustomerRepository
             existing.Phone = customer.Phone;
             existing.Email = customer.Email;
             existing.Address = customer.Address;
+            existing.OpeningBalance = customer.OpeningBalance;
+
             existing.ModifiedBy = _user.UserId ?? 0;
             existing.ModifiedDate = DateTimeOffset.UtcNow;
 
+            var openingLedger = await _context.CustomerLedgers
+                .FirstOrDefaultAsync(x =>
+                    x.CustomerId == customer.Id &&
+                    x.ReferenceType == "Opening");
+
+            if (openingLedger != null)
+            {
+                openingLedger.Debit = customer.OpeningBalance;
+                openingLedger.Credit = 0;
+                openingLedger.ClosingBalance = customer.OpeningBalance;
+
+                openingLedger.ModifiedBy = _user.UserId ?? 0;
+                openingLedger.ModifiedDate = DateTimeOffset.UtcNow;
+            }
+            else if (customer.OpeningBalance > 0)
+            {
+                await _context.CustomerLedgers.AddAsync(new CustomerLedger
+                {
+                    CustomerId = customer.Id,
+                    TransactionDate = DateTime.Now,
+                    ReferenceType = "Opening",
+                    ReferenceId = customer.Id,
+                    Description = "Customer Opening Balance",
+
+                    OpeningBalance = 0,
+                    Debit = customer.OpeningBalance,
+                    Credit = 0,
+                    ClosingBalance = customer.OpeningBalance,
+
+                    CreatedBy = _user.UserId ?? 0,
+                    CreatedDate = DateTimeOffset.UtcNow
+                });
+            }
+
             await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
             return true;
         }
         catch
         {
+            await transaction.RollbackAsync();
             return false;
         }
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+
         try
         {
-            var entity = await _context.Customers
+            var customer = await _context.Customers
                 .FirstOrDefaultAsync(x => x.Id == id && !x.IsDelete);
 
-            if (entity == null)
+            if (customer == null)
                 return false;
 
-            entity.IsDelete = true;
-            entity.ModifiedBy = _user.UserId ?? 0;
-            entity.ModifiedDate = DateTimeOffset.UtcNow;
+            customer.IsDelete = true;
+            customer.ModifiedBy = _user.UserId ?? 0;
+            customer.ModifiedDate = DateTimeOffset.UtcNow;
+
+            // Customer Ledger
+            var ledgers = await _context.CustomerLedgers
+                .Where(x => x.CustomerId == id && !x.IsDelete)
+                .ToListAsync();
+
+            ledgers.ForEach(x =>
+            {
+                x.IsDelete = true;
+                x.ModifiedBy = _user.UserId ?? 0;
+                x.ModifiedDate = DateTimeOffset.UtcNow;
+            });
+
+            // Customer Payments
+            var payments = await _context.CustomerPayments
+                .Where(x => x.CustomerId == id && !x.IsDelete)
+                .ToListAsync();
+
+            payments.ForEach(x =>
+            {
+                x.IsDelete = true;
+                x.ModifiedBy = _user.UserId ?? 0;
+                x.ModifiedDate = DateTimeOffset.UtcNow;
+            });
+
+            // Warranties
+            var warranties = await _context.Warranties
+                .Where(x => x.CustomerId == id && !x.IsDelete)
+                .ToListAsync();
+
+            warranties.ForEach(x =>
+            {
+                x.IsDelete = true;
+                x.ModifiedBy = _user.UserId ?? 0;
+                x.ModifiedDate = DateTimeOffset.UtcNow;
+            });
+
+            // Warranty Claims
+            var claims = await _context.WarrantyClaims
+                .Where(x => x.CustomerId == id && !x.IsDelete)
+                .ToListAsync();
+
+            claims.ForEach(x =>
+            {
+                x.IsDelete = true;
+                x.ModifiedBy = _user.UserId ?? 0;
+                x.ModifiedDate = DateTimeOffset.UtcNow;
+            });
 
             await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
             return true;
         }
         catch
         {
+            await transaction.RollbackAsync();
             return false;
         }
     }

@@ -4,6 +4,7 @@ using InventorySystem.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InventorySystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260615111834_updatedatabaseall")]
+    partial class updatedatabaseall
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -246,7 +249,7 @@ namespace InventorySystem.Migrations
                         {
                             Id = 1L,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d9a56794-4084-4710-aa82-8537732d5804",
+                            ConcurrencyStamp = "02b9dbcc-dd0d-4f2a-bae7-eee0f0915738",
                             CreatedBy = 0L,
                             CreatedDate = new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "admin@localhost.com",
@@ -254,9 +257,9 @@ namespace InventorySystem.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
                             NormalizedUserName = "ADMIN@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGCOCnkNn4mvvg2tBxXNpPIfjsY/4j3ArZCDY3UFYmCNkBQjQV5VqMwvqxxGRG2eHw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEByYn0wIsivlthCWvl68M8vHEgsKuI9x6Xe0qkR0W5F98O5qLgd4E/NJ2rD6bvEi/A==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "1b45367a-f91e-4370-8ba0-65121b462e6f",
+                            SecurityStamp = "f63fc658-d351-4671-93ee-1295d1632212",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost.com"
                         });
@@ -421,7 +424,7 @@ namespace InventorySystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<decimal>("ClosingBalance")
+                    b.Property<decimal>("Balance")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
@@ -455,10 +458,6 @@ namespace InventorySystem.Migrations
 
                     b.Property<DateTimeOffset?>("ModifiedDate")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<decimal>("OpeningBalance")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<long?>("ReferenceId")
                         .HasColumnType("bigint");
@@ -1021,7 +1020,7 @@ namespace InventorySystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<decimal>("ClosingBalance")
+                    b.Property<decimal>("Balance")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
@@ -1050,10 +1049,6 @@ namespace InventorySystem.Migrations
 
                     b.Property<DateTimeOffset?>("ModifiedDate")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<decimal>("OpeningBalance")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<long?>("ReferenceId")
                         .HasColumnType("bigint");
