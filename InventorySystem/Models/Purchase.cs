@@ -16,7 +16,7 @@ namespace InventorySystem.Models
         public decimal Vat { get; set; }
         public decimal TransportCost { get; set; }
         public decimal GrandTotal { get; set; }
-        public ICollection<PurchaseItem> PurchaseItem { get; set; } = new List<PurchaseItem>();
+        public List<PurchaseItem> PurchaseItem { get; set; } = new List<PurchaseItem>();
         public ICollection<SupplierPayment> SupplierPayment { get; set; } = new List<SupplierPayment>();
     }
 }

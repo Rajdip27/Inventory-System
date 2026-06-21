@@ -1,0 +1,129 @@
+﻿@using InventorySystem.Cmmon
+@using InventorySystem.HealperUnit
+@model PaginationModel<Purchase>
+
+@{
+    string currentSearch = Context.Request.Query["search"].ToString() ?? "";
+    int sl = (Model?.PageNumber - 1) * Model.PageSize + 1 ?? 1;
+}
+
+<div class="page-content">
+
+    <div class="table-card">
+
+        <!-- HEADER -->
+        <div class="table-card-header">
+            <div>
+                <h5 class="table-card-title">Purchase List</h5>
+                <small class="table-card-subtitle">
+                    Manage all purchases • @Model?.TotalItems items
+                </small>
+            </div>
+
+            <div class="d-flex gap-3 align-items-center">
+
+                <!-- SEARCH -->
+                <form method="get" class="d-flex gap-2">
+                    <div class="search-field" style="width: 280px;">
+                        <i class="ri-search-line"></i>
+                        <input type="text"
+                               name="search"
+                               class="toolbar-input"
+                               placeholder="Search invoice, supplier..."
+                               value="@currentSearch" />
+                        <input type="hidden" name="page" value="1" />
+                    </div>
+
+                    <button class="btn btn-primary-sm" type="submit">
+                        <i class="ri-search-line"></i>
+                    </button>
+                </form>
+
+                <!-- CREATE -->
+                <a asp-action="CreateAndEdit"
+                   class="btn btn-primary-sm d-flex align-items-center gap-2">
+                    <i class="ri-add-line"></i> New Purchase
+                </a>
+
+            </div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width:60px;">SL</th>
+                        <th>Invoice</th>
+                        <th>Supplier</th>
+                        <th>Warehouse</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th style="width:120px;" class="text-center">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model?.Items != null && Model.Items.Any())
+                    {
+                        foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td class="text-center">@sl</td>
+
+                                <td class="fw-semibold">@item.InvoiceNo</td>
+
+                                <td>@item.Supplier?.Name</td>
+
+                                <td>@item.Warehouse?.Name</td>
+
+                                <td>@item.PurchaseDate.ToString("dd-MM-yyyy")</td>
+
+                                <td class="fw-semibold">
+                                    @item.GrandTotal
+                                </td>
+
+                                <td class="text-center">
+                                    <div class="action-btns">
+
+                                        <!-- EDIT -->
+                                        <a asp-action="CreateAndEdit"
+                                           asp-route-id="@item.Id"
+                                           class="action-btn action-btn--edit">
+                                            <i class="ri-edit-line"></i>
+                                        </a>
+
+                                        <!-- DELETE -->
+                                        <a href="javascript:void(0);"
+                                           class="btn btn-danger btn-sm"
+                                           onclick="confirmDelete('/Purchase/Delete/@item.Id')">
+                                            <i class="ri-delete-bin-6-line"></i>
+                                        </a>
+
+                                    </div>
+                                </td>
+                            </tr>
+
+                            sl++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="empty-state">
+                                <i class="ri-inbox-line" style="font-size:42px;"></i>
+                                <p>No purchases found</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="pagination-bar">
+            <partial name="_Pagination" model="Model" />
+        </div>
+
+    </div>
+</div>

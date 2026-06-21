@@ -1,0 +1,239 @@
+﻿@model Purchase
+
+@{
+    bool isEdit = Model?.Id > 0;
+    var items = Model?.PurchaseItem ?? new List<PurchaseItem>();
+}
+
+<div class="page-content">
+    <div class="table-card">
+
+        <!-- HEADER -->
+        <div class="table-card-header">
+            <div>
+                <h5 class="table-card-title">
+                    @(isEdit ? "Edit Purchase" : "Create Purchase")
+                </h5>
+                <small class="table-card-subtitle">Multiple Product Purchase System</small>
+            </div>
+
+            <a asp-action="Index" class="btn btn-outline-sm">Back</a>
+        </div>
+
+        <!-- FORM -->
+        <form asp-action="CreateAndEdit" method="post">
+
+            @if (isEdit)
+            {
+                <input type="hidden" asp-for="Id" />
+            }
+
+            <!-- BASIC INFO -->
+            <div class="p-4 row g-3">
+
+                <div class="col-md-3">
+                    <label>Invoice No</label>
+                    <input asp-for="InvoiceNo" class="toolbar-input" />
+                </div>
+
+                <div class="col-md-3">
+                    <label>Supplier</label>
+                    <input asp-for="SupplierId" class="toolbar-input" />
+                </div>
+
+                <div class="col-md-3">
+                    <label>Warehouse</label>
+                    <input asp-for="WarehouseId" class="toolbar-input" />
+                </div>
+
+                <div class="col-md-3">
+                    <label>Date</label>
+                    <input asp-for="PurchaseDate" type="date" class="toolbar-input" />
+                </div>
+
+            </div>
+
+            <hr />
+
+            <!-- ================= ITEMS ================= -->
+            <div class="p-4">
+
+                <div class="d-flex justify-content-between mb-2">
+                    <h6>Purchase Items</h6>
+
+                    <button type="button" id="btnAddRow" class="btn btn-primary-sm">
+                        + Add Product
+                    </button>
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Qty</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="itemsBody">
+
+                        @for (int i = 0; i < items.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    <input name="PurchaseItem[@i].ProductId"
+                                           value="@items[i].ProductId"
+                                           class="toolbar-input" />
+                                </td>
+
+                                <td>
+                                    <input name="PurchaseItem[@i].Quantity"
+                                           value="@items[i].Quantity"
+                                           class="toolbar-input qty" />
+                                </td>
+
+                                <td>
+                                    <input name="PurchaseItem[@i].UnitPrice"
+                                           value="@items[i].UnitPrice"
+                                           class="toolbar-input price" />
+                                </td>
+
+                                <td class="row-total">
+                                    @(items[i].Quantity * items[i].UnitPrice)
+                                </td>
+
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm remove">X</button>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+
+            </div>
+
+            <!-- ================= SUMMARY ================= -->
+            <div class="p-4 row g-3 border-top">
+
+                <div class="col-md-3">
+                    <label>Discount</label>
+                    <input asp-for="Discount" class="toolbar-input" id="discount" />
+                </div>
+
+                <div class="col-md-3">
+                    <label>Tax</label>
+                    <input asp-for="Tax" class="toolbar-input" id="tax" />
+                </div>
+
+                <div class="col-md-3">
+                    <label>VAT</label>
+                    <input asp-for="Vat" class="toolbar-input" id="vat" />
+                </div>
+
+                <div class="col-md-3">
+                    <label>Transport</label>
+                    <input asp-for="TransportCost" class="toolbar-input" id="transport" />
+                </div>
+
+                <div class="col-12 text-end mt-2">
+                    <h4>
+                        Grand Total: <span id="grandTotal">0</span>
+                    </h4>
+                </div>
+
+            </div>
+
+            <!-- BUTTONS -->
+            <div class="p-4 border-top d-flex gap-3">
+
+                <button type="submit" class="btn btn-primary-sm">
+                    Save Purchase
+                </button>
+
+                <a asp-action="Index" class="btn btn-outline-sm">
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+
+        let i = @items.Count;
+
+        // ADD ROW
+        $("#btnAddRow").click(function () {
+
+            $("#itemsBody").append(`
+                <tr>
+                    <td><input name="PurchaseItem[${i}].ProductId" class="toolbar-input"></td>
+                    <td><input name="PurchaseItem[${i}].Quantity" class="toolbar-input qty"></td>
+                    <td><input name="PurchaseItem[${i}].UnitPrice" class="toolbar-input price"></td>
+                    <td class="row-total">0</td>
+                    <td><button type="button" class="btn btn-danger btn-sm remove">X</button></td>
+                </tr>
+            `);
+
+            i++;
+            calc();
+        });
+
+        // REMOVE ROW
+        $(document).on("click", ".remove", function () {
+            $(this).closest("tr").remove();
+            calc();
+        });
+
+        // INPUT CHANGE
+        $(document).on("input",
+            ".qty, .price, #discount, #tax, #vat, #transport",
+            function () {
+                calc();
+            }
+        );
+
+        // CALCULATION ENGINE
+        function calc() {
+
+            let subtotal = 0;
+
+            $("#itemsBody tr").each(function () {
+
+                let q = parseFloat($(this).find(".qty").val()) || 0;
+                let p = parseFloat($(this).find(".price").val()) || 0;
+
+                let row = q * p;
+
+                $(this).find(".row-total").text(row.toFixed(2));
+
+                subtotal += row;
+            });
+
+            let discount = parseFloat($("#discount").val()) || 0;
+            let tax = parseFloat($("#tax").val()) || 0;
+            let vat = parseFloat($("#vat").val()) || 0;
+            let transport = parseFloat($("#transport").val()) || 0;
+
+            let grandTotal =
+                subtotal +
+                tax +
+                vat +
+                transport -
+                discount;
+
+            $("#grandTotal").text(grandTotal.toFixed(2));
+        }
+
+        // INIT
+        calc();
+
+    </script>
+}
