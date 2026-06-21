@@ -2,6 +2,7 @@
 using InventorySystem.DatabaseContext;
 using InventorySystem.HealperUnit;
 using InventorySystem.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace InventorySystem.Repositories;
@@ -13,6 +14,7 @@ public interface ICustomerRepository
     Task<bool> AddAsync(Customer customer);
     Task<bool> UpdateAsync(Customer customer);
     Task<bool> DeleteAsync(int id);
+    Task<List<SelectListItem>> GetCustomerDropdownAsync();
 }
 public class CustomerRepository : ICustomerRepository
 {
@@ -24,7 +26,18 @@ public class CustomerRepository : ICustomerRepository
         _context = context;
         _user = user;
     }
-
+    public async Task<List<SelectListItem>> GetCustomerDropdownAsync()
+    {
+        return await _context.Customers
+            .Where(x => !x.IsDelete)
+            .OrderBy(x => x.Name)
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.Name
+            })
+            .ToListAsync();
+    }
     public async Task<PaginationModel<Customer>> GetAllAsync(string search, int pageNumber, int pageSize)
     {
         try

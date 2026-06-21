@@ -3,6 +3,7 @@ using InventorySystem.DatabaseContext;
 using InventorySystem.Extensions;
 using InventorySystem.HealperUnit;
 using InventorySystem.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace InventorySystem.Repositories;
@@ -14,6 +15,8 @@ public interface IProductRepository
     Task<bool> AddAsync(Product product);
     Task<bool> UpdateAsync(Product product);
     Task<bool> DeleteAsync(int id);
+    Task<List<SelectListItem>> GetProductDropdownAsync();
+    Task<List<SelectListItem>> GetWarehouseDropdownAsync();
 }
 
 public class ProductRepository : IProductRepository
@@ -26,7 +29,30 @@ public class ProductRepository : IProductRepository
         _context = context;
         _user = user;
     }
-
+    public async Task<List<SelectListItem>> GetWarehouseDropdownAsync()
+    {
+        return await _context.Warehouses
+            .Where(x => !x.IsDelete )
+            .OrderBy(x => x.Name)
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.Name
+            })
+            .ToListAsync();
+    }
+    public async Task<List<SelectListItem>> GetProductDropdownAsync()
+    {
+        return await _context.Products
+            .Where(x => !x.IsDelete && x.Status)
+            .OrderBy(x => x.ProductName)
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.ProductName
+            })
+            .ToListAsync();
+    }
     // GET ALL (PAGINATION + SEARCH)
     public async Task<PaginationModel<Product>> GetAllAsync(string search, int pageNumber, int pageSize)
     {

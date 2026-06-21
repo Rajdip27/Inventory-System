@@ -1,4 +1,5 @@
 ﻿@model Purchase
+@using System.Text.Json
 
 @{
     bool isEdit = Model?.Id > 0;
@@ -8,159 +9,176 @@
 <div class="page-content">
     <div class="table-card">
 
-        <!-- HEADER -->
+        <!-- HEADER (same as Customer design) -->
         <div class="table-card-header">
             <div>
                 <h5 class="table-card-title">
-                    @(isEdit ? "Edit Purchase" : "Create Purchase")
+                    @(isEdit ? "Edit Purchase" : "New Purchase")
                 </h5>
-                <small class="table-card-subtitle">Multiple Product Purchase System</small>
+                <small class="table-card-subtitle">
+                    Multi Product Purchase System
+                </small>
             </div>
 
-            <a asp-action="Index" class="btn btn-outline-sm">Back</a>
+            <div>
+                <a asp-action="Index" class="btn btn-outline-sm">
+                    Back to List
+                </a>
+            </div>
         </div>
 
-        <!-- FORM -->
-        <form asp-action="CreateAndEdit" method="post">
+        <!-- FORM BODY -->
+        <div class="p-5">
 
-            @if (isEdit)
-            {
-                <input type="hidden" asp-for="Id" />
-            }
+            <form asp-action="CreateAndEdit" method="post" class="row g-4">
 
-            <!-- BASIC INFO -->
-            <div class="p-4 row g-3">
+                @if (isEdit)
+                {
+                    <input type="hidden" asp-for="Id" />
+                }
 
+                <!-- Invoice -->
                 <div class="col-md-3">
-                    <label>Invoice No</label>
+                    <label class="form-label fw-medium">Invoice No</label>
                     <input asp-for="InvoiceNo" class="toolbar-input" />
                 </div>
 
+                <!-- Supplier -->
                 <div class="col-md-3">
-                    <label>Supplier</label>
-                    <input asp-for="SupplierId" class="toolbar-input" />
+                    <label class="form-label fw-medium">Supplier</label>
+                    <select asp-for="SupplierId" asp-items="ViewBag.Suppliers" class="toolbar-input">
+                        <option value="">Select</option>
+                    </select>
                 </div>
 
+                <!-- Warehouse -->
                 <div class="col-md-3">
-                    <label>Warehouse</label>
-                    <input asp-for="WarehouseId" class="toolbar-input" />
+                    <label class="form-label fw-medium">Warehouse</label>
+                    <select asp-for="WarehouseId" asp-items="ViewBag.Warehouses" class="toolbar-input">
+                        <option value="">Select</option>
+                    </select>
                 </div>
 
+                <!-- Date -->
                 <div class="col-md-3">
-                    <label>Date</label>
+                    <label class="form-label fw-medium">Date</label>
                     <input asp-for="PurchaseDate" type="date" class="toolbar-input" />
                 </div>
 
-            </div>
+                <!-- PRODUCT SECTION FULL WIDTH -->
+                <div class="col-12 pt-3">
 
-            <hr />
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="fw-bold">Product Items</h6>
 
-            <!-- ================= ITEMS ================= -->
-            <div class="p-4">
+                        <button type="button" id="btnAddRow" class="btn btn-primary-sm">
+                            + Add Product
+                        </button>
+                    </div>
 
-                <div class="d-flex justify-content-between mb-2">
-                    <h6>Purchase Items</h6>
-
-                    <button type="button" id="btnAddRow" class="btn btn-primary-sm">
-                        + Add Product
-                    </button>
-                </div>
-
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Qty</th>
-                            <th>Unit Price</th>
-                            <th>Total</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="itemsBody">
-
-                        @for (int i = 0; i < items.Count; i++)
-                        {
+                    <table class="data-table">
+                        <thead>
                             <tr>
-                                <td>
-                                    <input name="PurchaseItem[@i].ProductId"
-                                           value="@items[i].ProductId"
-                                           class="toolbar-input" />
-                                </td>
-
-                                <td>
-                                    <input name="PurchaseItem[@i].Quantity"
-                                           value="@items[i].Quantity"
-                                           class="toolbar-input qty" />
-                                </td>
-
-                                <td>
-                                    <input name="PurchaseItem[@i].UnitPrice"
-                                           value="@items[i].UnitPrice"
-                                           class="toolbar-input price" />
-                                </td>
-
-                                <td class="row-total">
-                                    @(items[i].Quantity * items[i].UnitPrice)
-                                </td>
-
-                                <td>
-                                    <button type="button" class="btn btn-danger btn-sm remove">X</button>
-                                </td>
+                                <th>Product</th>
+                                <th>Qty</th>
+                                <th>Unit Price</th>
+                                <th>Total</th>
+                                <th></th>
                             </tr>
-                        }
+                        </thead>
 
-                    </tbody>
-                </table>
+                        <tbody id="itemsBody">
 
-            </div>
+                            @for (int i = 0; i < items.Count; i++)
+                            {
+                                <tr>
 
-            <!-- ================= SUMMARY ================= -->
-            <div class="p-4 row g-3 border-top">
+                                    <td>
+                                        <select name="PurchaseItem[@i].ProductId" class="toolbar-input product">
+                                            @foreach (var p in (IEnumerable<SelectListItem>)ViewBag.Products)
+                                            {
+                                                <option value="@p.Value"
+                                                        selected="@(p.Value == items[i].ProductId.ToString() ? "selected" : null)">
+                                                    @p.Text
+                                                </option>
+                                            }
+                                        </select>
+                                    </td>
 
-                <div class="col-md-3">
-                    <label>Discount</label>
-                    <input asp-for="Discount" class="toolbar-input" id="discount" />
+                                    <td>
+                                        <input name="PurchaseItem[@i].Quantity"
+                                               value="@items[i].Quantity"
+                                               class="toolbar-input qty" />
+                                    </td>
+
+                                    <td>
+                                        <input name="PurchaseItem[@i].UnitPrice"
+                                               value="@items[i].UnitPrice"
+                                               class="toolbar-input price" />
+                                    </td>
+
+                                    <td class="row-total">
+                                        @(items[i].Quantity * items[i].UnitPrice)
+                                    </td>
+
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm remove">X</button>
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
                 </div>
 
-                <div class="col-md-3">
-                    <label>Tax</label>
-                    <input asp-for="Tax" class="toolbar-input" id="tax" />
+                <!-- TOTAL SECTION (Customer style like form fields) -->
+                <div class="col-12 row g-3 pt-3 border-top">
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-medium">Discount</label>
+                        <input asp-for="Discount" id="discount" class="toolbar-input" value="0" />
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-medium">Tax</label>
+                        <input asp-for="Tax" id="tax" class="toolbar-input" value="0" />
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-medium">VAT</label>
+                        <input asp-for="Vat" id="vat" class="toolbar-input" value="0" />
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-medium">Transport</label>
+                        <input asp-for="TransportCost" id="transport" class="toolbar-input" value="0" />
+                    </div>
+
+                    <div class="col-12 text-end pt-3">
+                        <h4 class="fw-bold">
+                            Grand Total: <span id="grandTotal">0.00</span>
+                        </h4>
+                    </div>
+
                 </div>
 
-                <div class="col-md-3">
-                    <label>VAT</label>
-                    <input asp-for="Vat" class="toolbar-input" id="vat" />
+                <!-- BUTTONS -->
+                <div class="col-12 d-flex gap-3 pt-4 border-top">
+
+                    <button type="submit" class="btn btn-primary-sm">
+                        Save Purchase
+                    </button>
+
+                    <a asp-action="Index" class="btn btn-outline-sm">
+                        Cancel
+                    </a>
+
                 </div>
 
-                <div class="col-md-3">
-                    <label>Transport</label>
-                    <input asp-for="TransportCost" class="toolbar-input" id="transport" />
-                </div>
+            </form>
 
-                <div class="col-12 text-end mt-2">
-                    <h4>
-                        Grand Total: <span id="grandTotal">0</span>
-                    </h4>
-                </div>
-
-            </div>
-
-            <!-- BUTTONS -->
-            <div class="p-4 border-top d-flex gap-3">
-
-                <button type="submit" class="btn btn-primary-sm">
-                    Save Purchase
-                </button>
-
-                <a asp-action="Index" class="btn btn-outline-sm">
-                    Cancel
-                </a>
-
-            </div>
-
-        </form>
-
+        </div>
     </div>
 </div>
 
@@ -169,15 +187,38 @@
 
         let i = @items.Count;
 
-        // ADD ROW
+        let products = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                    ((IEnumerable<SelectListItem>)ViewBag.Products).Select(x => new
+                                    {
+                                                value = x.Value,
+                                                text = x.Text
+                                    })
+                    ));
+
+        function productOptions() {
+            let opt = `<option value="">Select Product</option>`;
+            products.forEach(p => {
+                opt += `<option value="${p.value}">${p.text}</option>`;
+            });
+            return opt;
+        }
+
         $("#btnAddRow").click(function () {
 
             $("#itemsBody").append(`
                 <tr>
-                    <td><input name="PurchaseItem[${i}].ProductId" class="toolbar-input"></td>
-                    <td><input name="PurchaseItem[${i}].Quantity" class="toolbar-input qty"></td>
-                    <td><input name="PurchaseItem[${i}].UnitPrice" class="toolbar-input price"></td>
-                    <td class="row-total">0</td>
+                    <td>
+                        <select name="PurchaseItem[${i}].ProductId" class="toolbar-input product">
+                            ${productOptions()}
+                        </select>
+                    </td>
+
+                    <td><input name="PurchaseItem[${i}].Quantity" class="toolbar-input qty" value="0"></td>
+
+                    <td><input name="PurchaseItem[${i}].UnitPrice" class="toolbar-input price" value="0"></td>
+
+                    <td class="row-total">0.00</td>
+
                     <td><button type="button" class="btn btn-danger btn-sm remove">X</button></td>
                 </tr>
             `);
@@ -186,21 +227,26 @@
             calc();
         });
 
-        // REMOVE ROW
         $(document).on("click", ".remove", function () {
             $(this).closest("tr").remove();
+            reIndex();
             calc();
         });
 
-        // INPUT CHANGE
-        $(document).on("input",
-            ".qty, .price, #discount, #tax, #vat, #transport",
-            function () {
-                calc();
-            }
-        );
+        $(document).on("input", ".qty, .price, #discount, #tax, #vat, #transport", function () {
+            calc();
+        });
 
-        // CALCULATION ENGINE
+        function reIndex() {
+            $("#itemsBody tr").each(function (index) {
+                $(this).find("select").attr("name", `PurchaseItem[${index}].ProductId`);
+                $(this).find(".qty").attr("name", `PurchaseItem[${index}].Quantity`);
+                $(this).find(".price").attr("name", `PurchaseItem[${index}].UnitPrice`);
+            });
+
+            i = $("#itemsBody tr").length;
+        }
+
         function calc() {
 
             let subtotal = 0;
@@ -210,11 +256,11 @@
                 let q = parseFloat($(this).find(".qty").val()) || 0;
                 let p = parseFloat($(this).find(".price").val()) || 0;
 
-                let row = q * p;
+                let total = q * p;
 
-                $(this).find(".row-total").text(row.toFixed(2));
+                $(this).find(".row-total").text(total.toFixed(2));
 
-                subtotal += row;
+                subtotal += total;
             });
 
             let discount = parseFloat($("#discount").val()) || 0;
@@ -222,17 +268,11 @@
             let vat = parseFloat($("#vat").val()) || 0;
             let transport = parseFloat($("#transport").val()) || 0;
 
-            let grandTotal =
-                subtotal +
-                tax +
-                vat +
-                transport -
-                discount;
+            let grandTotal = subtotal + tax + vat + transport - discount;
 
             $("#grandTotal").text(grandTotal.toFixed(2));
         }
 
-        // INIT
         calc();
 
     </script>

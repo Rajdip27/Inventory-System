@@ -1,4 +1,5 @@
-﻿using InventorySystem.Logging;
+﻿using InventorySystem.Cmmon;
+using InventorySystem.Logging;
 using InventorySystem.Models;
 using InventorySystem.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -8,13 +9,19 @@ namespace InventorySystem.Controllers;
 public class PurchaseController : Controller
 {
     private readonly IPurchaseRepository _repo;
+    private readonly IProductRepository _productRepository;
+    private readonly ISupplierRepository _supplierRepository;
     private readonly IAppLogger<PurchaseController> _logger;
     public PurchaseController(
         IPurchaseRepository repo,
+        IProductRepository productRepository,
+        ISupplierRepository supplierRepository,
         IAppLogger<PurchaseController> logger)
     {
         _repo = repo;
         _logger = logger;
+        _productRepository = productRepository;
+        _supplierRepository = supplierRepository;
     }
     public async Task<IActionResult> Index(string search = "", int page = 1, int pageSize = 10)
     {
@@ -30,6 +37,9 @@ public class PurchaseController : Controller
     public async Task<IActionResult> CreateAndEdit(long? id)
     {
         _logger.LogInfo($"CreateAndEdit GET called | id: {id}");
+        ViewBag.Products = await _productRepository.GetProductDropdownAsync();
+        ViewBag.Warehouses = await _productRepository.GetWarehouseDropdownAsync();
+        ViewBag.Suppliers = await _supplierRepository.GetSupplierDropdownAsync();
 
         if (id == null || id == 0)
         {
@@ -37,6 +47,7 @@ public class PurchaseController : Controller
             return View(new Purchase
             {
                 PurchaseDate = DateTime.Now,
+                InvoiceNo = InvoiceGenerator.GenerateInvoiceNo(),
                 PurchaseItem = new List<PurchaseItem>()
             });
         }

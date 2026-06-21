@@ -5,7 +5,6 @@ using InventorySystem.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace InventorySystem.Repositories;
-
 public interface ISalesInvoiceRepository
 {
     Task<PaginationModel<SalesInvoice>> GetAllAsync(string search, int pageNumber, int pageSize);
@@ -198,7 +197,6 @@ public class SalesInvoiceRepository : ISalesInvoiceRepository
             existing.Tax = model.Tax;
             existing.Vat = model.Vat;
             existing.PaidAmount = model.PaidAmount;
-
             existing.ModifiedBy = _user.UserId ?? 0;
             existing.ModifiedDate = DateTimeOffset.UtcNow;
             _context.SalesItems.RemoveRange(existing.SalesItem);
@@ -209,7 +207,6 @@ public class SalesInvoiceRepository : ISalesInvoiceRepository
             {
                 decimal line = item.Quantity * item.UnitPrice;
                 subtotal += line;
-
                 item.SalesInvoiceId = existing.Id;
                 await _context.SalesItems.AddAsync(item);
                 await _context.StockLedgers.AddAsync(new StockLedger
@@ -240,10 +237,8 @@ public class SalesInvoiceRepository : ISalesInvoiceRepository
                 ledger.Credit = model.PaidAmount;
                 ledger.ClosingBalance = due;
             }
-
             await _context.SaveChangesAsync();
             await trx.CommitAsync();
-
             return true;
         }
         catch
