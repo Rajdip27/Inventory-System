@@ -1,0 +1,165 @@
+﻿@model List<CustomerLedger>
+
+<div class="page-content">
+    <!-- TABLE CARD -->
+    <div class="table-card">
+
+        <!-- Header -->
+        <div class="table-card-header">
+
+            <div>
+                <h5 class="table-card-title">Customer Ledger</h5>
+                <small class="table-card-subtitle">
+                    Manage all customer transactions
+                </small>
+            </div>
+
+            <div class="d-flex gap-3 align-items-center">
+
+                <!-- FILTER FORM (SAME STYLE AS SEARCH) -->
+                <form method="get" class="d-flex gap-2 align-items-center">
+
+                    <!-- Customer Search Field Style -->
+                    <div class="search-field" style="width: 220px;">
+                        <i class="ri-user-search-line"></i>
+
+                        <select name="customerId"
+                                class="toolbar-input">
+
+                            <option value="">All Customers</option>
+
+                            @foreach (var item in ViewBag.Customers)
+                            {
+                                <option value="@item.Value"
+                                        selected="@(ViewBag.CustomerId?.ToString() == item.Value)">
+                                    @item.Text
+                                </option>
+                            }
+
+                        </select>
+                    </div>
+
+                    <!-- Start Date -->
+                    <div class="search-field" style="width: 160px;">
+                        <i class="ri-calendar-line"></i>
+
+                        <input type="date"
+                               name="startDate"
+                               class="toolbar-input"
+                               value="@ViewBag.StartDate" />
+                    </div>
+
+                    <!-- End Date -->
+                    <div class="search-field" style="width: 160px;">
+                        <i class="ri-calendar-line"></i>
+
+                        <input type="date"
+                               name="endDate"
+                               class="toolbar-input"
+                               value="@ViewBag.EndDate" />
+                    </div>
+
+                    <!-- SEARCH BUTTON (SAME AS YOUR THEME) -->
+                    <button type="submit"
+                            class="btn btn-primary-sm">
+                        <i class="ri-search-line"></i>
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-responsive">
+
+            <table class="data-table">
+
+                <thead>
+                    <tr>
+                        <th style="width:60px;">SL</th>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Reference</th>
+                        <th>Description</th>
+                        <th class="text-end">Opening</th>
+                        <th class="text-end">Debit</th>
+                        <th class="text-end">Credit</th>
+                        <th class="text-end">Closing</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @{
+                        int sl = 1;
+                    }
+
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+
+                                <td class="text-center fw-medium">
+                                    @sl
+                                </td>
+
+                                <td>
+                                    @item.TransactionDate.ToString("dd-MMM-yyyy")
+                                </td>
+
+                                <td class="fw-semibold">
+                                    @item.Customer?.Name
+                                </td>
+
+                                <td>
+                                    @item.ReferenceType
+                                </td>
+
+                                <td>
+                                    @item.Description
+                                </td>
+
+                                <td class="text-end">
+                                    @item.OpeningBalance.ToString("N2")
+                                </td>
+
+                                <td class="text-end text-danger fw-semibold">
+                                    @item.Debit.ToString("N2")
+                                </td>
+
+                                <td class="text-end text-success fw-semibold">
+                                    @item.Credit.ToString("N2")
+                                </td>
+
+                                <td class="text-end fw-bold">
+                                    @item.ClosingBalance.ToString("N2")
+                                </td>
+
+                            </tr>
+
+                            sl++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" class="empty-state">
+                                <i class="ri-inbox-line" style="font-size:42px;"></i>
+                                <p>No ledger records found</p>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+  
+
+</div>

@@ -14,6 +14,7 @@ public interface ISupplierRepository
     Task<bool> UpdateAsync(Supplier supplier);
     Task<bool> DeleteAsync(int id);
 }
+
 public class SupplierRepository : ISupplierRepository
 {
     private readonly ApplicationDbContext _context;
@@ -83,6 +84,7 @@ public class SupplierRepository : ISupplierRepository
         try
         {
             return await _context.Suppliers
+                .Include(x => x.SupplierLedgers)
                 .FirstOrDefaultAsync(x => x.Id == id && !x.IsDelete);
         }
         catch
@@ -93,6 +95,8 @@ public class SupplierRepository : ISupplierRepository
 
     public async Task<bool> AddAsync(Supplier supplier)
     {
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+
         try
         {
             supplier.CreatedBy = _user.UserId ?? 0;
@@ -101,16 +105,44 @@ public class SupplierRepository : ISupplierRepository
             await _context.Suppliers.AddAsync(supplier);
             await _context.SaveChangesAsync();
 
+            if (supplier.OpeningBalance > 0)
+            {
+                await _context.SupplierLedgers.AddAsync(new SupplierLedger
+                {
+                    SupplierId = supplier.Id,
+                    TransactionDate = DateTime.Now,
+
+                    ReferenceType = "Opening",
+                    ReferenceId = supplier.Id,
+                    Description = "Supplier Opening Balance",
+
+                    OpeningBalance = 0,
+                    Debit = 0,
+                    Credit = supplier.OpeningBalance,
+                    ClosingBalance = supplier.OpeningBalance,
+
+                    CreatedBy = _user.UserId ?? 0,
+                    CreatedDate = DateTimeOffset.UtcNow
+                });
+
+                await _context.SaveChangesAsync();
+            }
+
+            await transaction.CommitAsync();
+
             return true;
         }
         catch
         {
+            await transaction.RollbackAsync();
             return false;
         }
     }
 
     public async Task<bool> UpdateAsync(Supplier supplier)
     {
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+
         try
         {
             var existing = await _context.Suppliers
@@ -128,40 +160,95 @@ public class SupplierRepository : ISupplierRepository
             existing.TradeLicense = supplier.TradeLicense;
             existing.TIN = supplier.TIN;
             existing.BIN = supplier.BIN;
+            existing.OpeningBalance = supplier.OpeningBalance;
 
             existing.ModifiedBy = _user.UserId ?? 0;
             existing.ModifiedDate = DateTimeOffset.UtcNow;
 
+            var openingLedger = await _context.SupplierLedgers
+                .FirstOrDefaultAsync(x =>
+                    x.SupplierId == supplier.Id &&
+                    x.ReferenceType == "Opening" &&
+                    !x.IsDelete);
+
+            if (openingLedger != null)
+            {
+                openingLedger.Credit = supplier.OpeningBalance;
+                openingLedger.ClosingBalance = supplier.OpeningBalance;
+
+                openingLedger.ModifiedBy = _user.UserId ?? 0;
+                openingLedger.ModifiedDate = DateTimeOffset.UtcNow;
+            }
+            else if (supplier.OpeningBalance > 0)
+            {
+                await _context.SupplierLedgers.AddAsync(new SupplierLedger
+                {
+                    SupplierId = supplier.Id,
+                    TransactionDate = DateTime.Now,
+
+                    ReferenceType = "Opening",
+                    ReferenceId = supplier.Id,
+                    Description = "Supplier Opening Balance",
+
+                    OpeningBalance = 0,
+                    Debit = 0,
+                    Credit = supplier.OpeningBalance,
+                    ClosingBalance = supplier.OpeningBalance,
+
+                    CreatedBy = _user.UserId ?? 0,
+                    CreatedDate = DateTimeOffset.UtcNow
+                });
+            }
+
             await _context.SaveChangesAsync();
+
+            await transaction.CommitAsync();
 
             return true;
         }
         catch
         {
+            await transaction.RollbackAsync();
             return false;
         }
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+
         try
         {
-            var entity = await _context.Suppliers
+            var supplier = await _context.Suppliers
                 .FirstOrDefaultAsync(x => x.Id == id && !x.IsDelete);
 
-            if (entity == null)
+            if (supplier == null)
                 return false;
 
-            entity.IsDelete = true;
-            entity.ModifiedBy = _user.UserId ?? 0;
-            entity.ModifiedDate = DateTimeOffset.UtcNow;
+            supplier.IsDelete = true;
+            supplier.ModifiedBy = _user.UserId ?? 0;
+            supplier.ModifiedDate = DateTimeOffset.UtcNow;
+
+            var ledgers = await _context.SupplierLedgers
+                .Where(x => x.SupplierId == id && !x.IsDelete)
+                .ToListAsync();
+
+            foreach (var ledger in ledgers)
+            {
+                ledger.IsDelete = true;
+                ledger.ModifiedBy = _user.UserId ?? 0;
+                ledger.ModifiedDate = DateTimeOffset.UtcNow;
+            }
 
             await _context.SaveChangesAsync();
+
+            await transaction.CommitAsync();
 
             return true;
         }
         catch
         {
+            await transaction.RollbackAsync();
             return false;
         }
     }

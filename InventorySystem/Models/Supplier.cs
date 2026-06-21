@@ -15,7 +15,7 @@ namespace InventorySystem.Models
         public string BIN { get; set; }
         public decimal OpeningBalance { get; set; } = 0;
         public ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
-        public ICollection<SupplierLedger> Ledgers { get; set; }= new List<SupplierLedger>();
+        public ICollection<SupplierLedger> SupplierLedgers { get; set; }= new List<SupplierLedger>();
         public ICollection<SupplierPayment> SupplierPayment { get; set; }= new List<SupplierPayment>();
     }
 }
