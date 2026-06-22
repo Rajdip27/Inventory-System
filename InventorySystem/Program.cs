@@ -2,7 +2,9 @@ using InventorySystem.DatabaseContext;
 using InventorySystem.HealperUnit;
 using InventorySystem.Logging;
 using InventorySystem.Models.Auth;
+using InventorySystem.Pdf;
 using InventorySystem.Repositories;
+using InventorySystem.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using static InventorySystem.Models.Auth.IdentityModel;
@@ -29,7 +31,7 @@ builder.Services.AddIdentity<User, Role>(options =>
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
-
+builder.Services.AddDinkToPdf(builder.Environment.ContentRootPath);
 builder.Services.AddTransient<ISignInHelper, SignInHelper>();
 builder.Services.AddTransient<ICustomerRepository, CustomerRepository>();
 builder.Services.AddTransient<IProductRepository, ProductRepository>();
@@ -38,6 +40,8 @@ builder.Services.AddScoped<ICustomerLedgerRepository, CustomerLedgerRepository>(
 builder.Services.AddScoped<IPurchaseRepository, PurchaseRepository>();
 builder.Services.AddScoped<ISalesInvoiceRepository, SalesInvoiceRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPdfService, PdfService >();
+builder.Services.AddScoped<IRazorViewToStringRenderer, RazorViewToStringRenderer>();
 builder.Services.AddScoped(typeof(IAppLogger<>), typeof(AppLogger<>));
 
 var app = builder.Build();
