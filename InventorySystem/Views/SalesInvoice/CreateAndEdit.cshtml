@@ -1,0 +1,319 @@
+﻿@model SalesInvoice
+@using System.Text.Json
+
+@{
+    bool isEdit = Model?.Id > 0;
+    var items = Model?.SalesItem?.ToList() ?? new List<SalesItem>();
+}
+
+<div class="page-content">
+    <div class="table-card">
+
+        <div class="table-card-header">
+            <div>
+                <h5 class="table-card-title">
+                    @(isEdit ? "Edit Sales Invoice" : "New Sales Invoice")
+                </h5>
+                <small class="table-card-subtitle">
+                    Multi Product Sales System
+                </small>
+            </div>
+
+            <div>
+                <a asp-action="Index" class="btn btn-outline-sm">
+                    Back to List
+                </a>
+            </div>
+        </div>
+
+        <div class="p-5">
+
+            <form asp-action="CreateAndEdit" method="post" class="row g-4">
+
+                @if (isEdit)
+                {
+                    <input type="hidden" asp-for="Id" />
+                }
+
+                <div class="col-md-4">
+                    <label class="form-label">Invoice No</label>
+                    <input asp-for="InvoiceNo" class="toolbar-input" />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Customer</label>
+                    <select asp-for="CustomerId"
+                            asp-items="ViewBag.Customers"
+                            class="toolbar-input">
+                        <option value="">Select Customer</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Invoice Date</label>
+                    <input asp-for="InvoiceDate"
+                           type="date"
+                           class="toolbar-input" />
+                </div>
+
+                <!-- PRODUCT TABLE -->
+
+                <div class="col-12">
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="fw-bold">Sales Items</h6>
+
+                        <button type="button"
+                                id="btnAddRow"
+                                class="btn btn-primary-sm">
+                            + Add Product
+                        </button>
+                    </div>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Qty</th>
+                                <th>Unit Price</th>
+                                <th>Total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="itemsBody">
+
+                            @for (int i = 0; i < items.Count; i++)
+                            {
+                                <tr>
+
+                                    <td>
+                                        <select name="SalesItem[@i].ProductId"
+                                                class="toolbar-input product">
+
+                                            @foreach (var p in (IEnumerable<SelectListItem>)ViewBag.Products)
+                                            {
+                                                <option value="@p.Value"
+                                                        selected="@(p.Value == items[i].ProductId.ToString())">
+                                                    @p.Text
+                                                </option>
+                                            }
+
+                                        </select>
+                                    </td>
+
+                                    <td>
+                                        <input name="SalesItem[@i].Quantity"
+                                               value="@items[i].Quantity"
+                                               class="toolbar-input qty" />
+                                    </td>
+
+                                    <td>
+                                        <input name="SalesItem[@i].UnitPrice"
+                                               value="@items[i].UnitPrice"
+                                               class="toolbar-input price" />
+                                    </td>
+
+                                    <td class="row-total">
+                                        @(items[i].Quantity * items[i].UnitPrice)
+                                    </td>
+
+                                    <td>
+                                        <button type="button"
+                                                class="btn btn-danger btn-sm remove">
+                                            X
+                                        </button>
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+
+                </div>
+
+                <!-- TOTAL SECTION -->
+
+                <div class="col-12 row g-3 border-top pt-4">
+
+                    <div class="col-md-3">
+                        <label>Discount</label>
+                        <input asp-for="Discount"
+                               id="discount"
+                               class="toolbar-input" />
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>Tax</label>
+                        <input asp-for="Tax"
+                               id="tax"
+                               class="toolbar-input" />
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>VAT</label>
+                        <input asp-for="Vat"
+                               id="vat"
+                               class="toolbar-input" />
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>Paid Amount</label>
+                        <input asp-for="PaidAmount"
+                               id="paid"
+                               class="toolbar-input" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <h5>
+                            Grand Total :
+                            <span id="grandTotal">0.00</span>
+                        </h5>
+                    </div>
+
+                    <div class="col-md-6 text-end">
+                        <h5>
+                            Due Amount :
+                            <span id="dueAmount">0.00</span>
+                        </h5>
+                    </div>
+
+                </div>
+
+                <div class="col-12 d-flex gap-2 border-top pt-4">
+
+                    <button type="submit"
+                            class="btn btn-primary-sm">
+                        Save Invoice
+                    </button>
+
+                    <a asp-action="Index"
+                       class="btn btn-outline-sm">
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+@section Scripts {
+
+    <script>
+
+        let i = @items.Count;
+
+        let products = @Html.Raw(JsonSerializer.Serialize(
+            ((IEnumerable<SelectListItem>)ViewBag.Products)
+            .Select(x => new
+            {
+                    value = x.Value,
+                    text = x.Text
+            })));
+
+        function productOptions(){
+
+            let html = `<option value="">Select Product</option>`;
+
+            products.forEach(x=>{
+                html += `<option value="${x.value}">${x.text}</option>`;
+            });
+
+            return html;
+        }
+
+        $("#btnAddRow").click(function(){
+
+            $("#itemsBody").append(`
+                <tr>
+                    <td>
+                        <select name="SalesItem[${i}].ProductId"
+                                class="toolbar-input">
+                            ${productOptions()}
+                        </select>
+                    </td>
+
+                    <td>
+                        <input name="SalesItem[${i}].Quantity"
+                               value="1"
+                               class="toolbar-input qty">
+                    </td>
+
+                    <td>
+                        <input name="SalesItem[${i}].UnitPrice"
+                               value="0"
+                               class="toolbar-input price">
+                    </td>
+
+                    <td class="row-total">0.00</td>
+
+                    <td>
+                        <button type="button"
+                                class="btn btn-danger btn-sm remove">
+                            X
+                        </button>
+                    </td>
+                </tr>
+            `);
+
+            i++;
+        });
+
+        $(document).on("click",".remove",function(){
+            $(this).closest("tr").remove();
+            calculate();
+        });
+
+        $(document).on("input",
+        ".qty,.price,#discount,#tax,#vat,#paid",
+        function(){
+            calculate();
+        });
+
+        function calculate(){
+
+            let subtotal = 0;
+
+            $("#itemsBody tr").each(function(){
+
+                let qty =
+                parseFloat($(this).find(".qty").val()) || 0;
+
+                let price =
+                parseFloat($(this).find(".price").val()) || 0;
+
+                let total = qty * price;
+
+                $(this).find(".row-total")
+                       .text(total.toFixed(2));
+
+                subtotal += total;
+            });
+
+            let discount =
+            parseFloat($("#discount").val()) || 0;
+
+            let tax =
+            parseFloat($("#tax").val()) || 0;
+
+            let vat =
+            parseFloat($("#vat").val()) || 0;
+
+            let paid =
+            parseFloat($("#paid").val()) || 0;
+
+            let grandTotal =
+            subtotal + tax + vat - discount;
+
+            let due =
+            grandTotal - paid;
+
+            $("#grandTotal").text(grandTotal.toFixed(2));
+            $("#dueAmount").text(due.toFixed(2));
+        }
+        calculate();
+    </script>
+}

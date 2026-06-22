@@ -1,0 +1,174 @@
+﻿@using InventorySystem.Cmmon
+@model PaginationModel<SalesInvoice>
+
+@{
+    string currentSearch = Context.Request.Query["search"].ToString() ?? "";
+    int sl = (Model?.PageNumber - 1) * Model.PageSize + 1 ?? 1;
+}
+
+<div class="page-content">
+
+    <!-- TABLE CARD -->
+    <div class="table-card">
+
+        <!-- HEADER -->
+        <div class="table-card-header">
+            <div>
+                <h5 class="table-card-title">Sales Invoice List</h5>
+                <small class="table-card-subtitle">
+                    Manage all sales invoices • @Model?.TotalItems items
+                </small>
+            </div>
+
+            <div class="d-flex gap-3 align-items-center">
+
+                <!-- SEARCH -->
+                <form method="get" class="d-flex gap-2">
+                    <div class="search-field" style="width: 280px;">
+                        <i class="ri-search-line"></i>
+                        <input type="text"
+                               name="search"
+                               class="toolbar-input"
+                               placeholder="Search invoice no, customer name, phone..."
+                               value="@currentSearch" />
+                        <input type="hidden" name="page" value="1" />
+                    </div>
+
+                    <button class="btn btn-primary-sm" type="submit">
+                        <i class="ri-search-line"></i>
+                    </button>
+                </form>
+
+                <!-- CREATE -->
+                <a asp-controller="SalesInvoice"
+                   asp-action="CreateAndEdit"
+                   class="btn btn-primary-sm d-flex align-items-center gap-2">
+                    <i class="ri-add-line"></i> New Invoice
+                </a>
+
+            </div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">SL</th>
+                        <th>Invoice No</th>
+                        <th>Customer</th>
+                        <th>Phone</th>
+                        <th>Date</th>
+                        <th>Grand Total</th>
+                        <th>Paid</th>
+                        <th>Due</th>
+                        <th>Status</th>
+                        <th style="width: 110px;" class="text-center">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model?.Items != null && Model.Items.Any())
+                    {
+                        foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td class="text-center fw-medium">@sl</td>
+
+                                <td class="fw-semibold">@item.InvoiceNo</td>
+
+                                <td>@item.Customer?.Name</td>
+
+                                <td>@item.Customer?.Phone</td>
+
+                                <td>@item.InvoiceDate.ToString("dd-MMM-yyyy")</td>
+
+                                <td>@item.GrandTotal</td>
+
+                                <td>@item.PaidAmount</td>
+
+                                <td>
+                                    @if (item.DueAmount > 0)
+                                    {
+                                        <span class="text-danger fw-semibold">
+                                            @item.DueAmount
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-success fw-semibold">0</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @if (item.DueAmount <= 0)
+                                    {
+                                        <span class="badge bg-success">Paid</span>
+                                    }
+                                    else if (item.PaidAmount > 0)
+                                    {
+                                        <span class="badge bg-warning">Partial</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Unpaid</span>
+                                    }
+                                </td>
+
+                                <td class="text-center">
+                                    <div class="action-btns">
+                                        @if (item.DueAmount > 0 && item.PaidAmount == 0)
+                                        {
+                                            <!-- Unpaid → Editable -->
+                                            <a asp-controller="SalesInvoice"
+                                               asp-action="CreateAndEdit"
+                                               asp-route-id="@item.Id"
+                                               class="action-btn action-btn--edit"
+                                               title="Edit Invoice">
+                                                <i class="ri-edit-line"></i>
+                                            </a>
+                                        }
+                                        <!-- VIEW / EDIT -->
+                                        <a asp-controller="SalesInvoice"
+                                           asp-action="Details"
+                                           asp-route-id="@item.Id"
+                                           class="action-btn action-btn--edit"
+                                           title="View/Edit">
+                                            <i class="ri-eye-line"></i>
+                                        </a>
+
+                                        <!-- PRINT -->
+                                        <a asp-controller="SalesInvoice"
+                                           asp-action="Print"
+                                           asp-route-id="@item.Id"
+                                           class="action-btn action-btn--view"
+                                           title="Print Invoice">
+                                            <i class="ri-printer-line"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            sl++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="10" class="empty-state">
+                                <i class="ri-inbox-line" style="font-size: 42px;"></i>
+                                <p>No invoices found</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="pagination-bar">
+            <partial name="_Pagination" model="Model" />
+        </div>
+
+    </div>
+</div>

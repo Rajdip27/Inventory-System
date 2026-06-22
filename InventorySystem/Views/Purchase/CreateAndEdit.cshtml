@@ -137,28 +137,33 @@
 
                     <div class="col-md-3">
                         <label class="form-label fw-medium">Discount</label>
-                        <input asp-for="Discount" id="discount" class="toolbar-input" value="0" />
+                        <input asp-for="Discount" id="discount" class="toolbar-input" />
                     </div>
 
                     <div class="col-md-3">
                         <label class="form-label fw-medium">Tax</label>
-                        <input asp-for="Tax" id="tax" class="toolbar-input" value="0" />
+                        <input asp-for="Tax" id="tax" class="toolbar-input"  />
                     </div>
 
                     <div class="col-md-3">
                         <label class="form-label fw-medium">VAT</label>
-                        <input asp-for="Vat" id="vat" class="toolbar-input" value="0" />
+                        <input asp-for="Vat" id="vat" class="toolbar-input"  />
                     </div>
 
                     <div class="col-md-3">
                         <label class="form-label fw-medium">Transport</label>
-                        <input asp-for="TransportCost" id="transport" class="toolbar-input" value="0" />
+                        <input asp-for="TransportCost" id="transport" class="toolbar-input"  />
                     </div>
 
                     <div class="col-12 text-end pt-3">
-                        <h4 class="fw-bold">
-                            Grand Total: <span id="grandTotal">0.00</span>
-                        </h4>
+                        <h4 class="fw-bold">Grand Total</h4>
+
+                        <input asp-for="GrandTotal"
+                               id="grandTotal"
+                               readonly
+                               type="number"
+                               step="0.01"
+                               class="toolbar-input" />
                     </div>
 
                 </div>
@@ -183,65 +188,108 @@
 </div>
 
 @section Scripts {
+
     <script>
 
         let i = @items.Count;
 
-        let products = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                                    ((IEnumerable<SelectListItem>)ViewBag.Products).Select(x => new
-                                    {
-                                                value = x.Value,
-                                                text = x.Text
-                                    })
-                    ));
+        let products = @Html.Raw(JsonSerializer.Serialize(
+                    ((IEnumerable<SelectListItem>)ViewBag.Products)
+                    .Select(x => new
+                    {
+                            value = x.Value,
+                            text = x.Text
+                    })
+            ));
 
         function productOptions() {
-            let opt = `<option value="">Select Product</option>`;
-            products.forEach(p => {
-                opt += `<option value="${p.value}">${p.text}</option>`;
+
+            let html = '<option value="">Select Product</option>';
+
+            products.forEach(function (p) {
+                html += `<option value="${p.value}">${p.text}</option>`;
             });
-            return opt;
+
+            return html;
         }
 
-        $("#btnAddRow").click(function () {
+        $("#btnAddRow").on("click", function () {
 
             $("#itemsBody").append(`
                 <tr>
+
                     <td>
-                        <select name="PurchaseItem[${i}].ProductId" class="toolbar-input product">
+                        <select name="PurchaseItem[${i}].ProductId"
+                                class="toolbar-input product">
                             ${productOptions()}
                         </select>
                     </td>
 
-                    <td><input name="PurchaseItem[${i}].Quantity" class="toolbar-input qty" value="0"></td>
+                    <td>
+                        <input type="number"
+                               step="0.01"
+                               value="0"
+                               name="PurchaseItem[${i}].Quantity"
+                               class="toolbar-input qty" />
+                    </td>
 
-                    <td><input name="PurchaseItem[${i}].UnitPrice" class="toolbar-input price" value="0"></td>
+                    <td>
+                        <input type="number"
+                               step="0.01"
+                               value="0"
+                               name="PurchaseItem[${i}].UnitPrice"
+                               class="toolbar-input price" />
+                    </td>
 
                     <td class="row-total">0.00</td>
 
-                    <td><button type="button" class="btn btn-danger btn-sm remove">X</button></td>
+                    <td>
+                        <button type="button"
+                                class="btn btn-danger btn-sm remove">
+                            X
+                        </button>
+                    </td>
+
                 </tr>
             `);
 
             i++;
+
             calc();
         });
 
         $(document).on("click", ".remove", function () {
+
             $(this).closest("tr").remove();
+
             reIndex();
+
             calc();
         });
 
-        $(document).on("input", ".qty, .price, #discount, #tax, #vat, #transport", function () {
-            calc();
-        });
+        $(document).on(
+            "input",
+            ".qty,.price,#discount,#tax,#vat,#transport",
+            function () {
+                calc();
+            }
+        );
 
         function reIndex() {
+
             $("#itemsBody tr").each(function (index) {
-                $(this).find("select").attr("name", `PurchaseItem[${index}].ProductId`);
-                $(this).find(".qty").attr("name", `PurchaseItem[${index}].Quantity`);
-                $(this).find(".price").attr("name", `PurchaseItem[${index}].UnitPrice`);
+
+                $(this)
+                    .find(".product")
+                    .attr("name", `PurchaseItem[${index}].ProductId`);
+
+                $(this)
+                    .find(".qty")
+                    .attr("name", `PurchaseItem[${index}].Quantity`);
+
+                $(this)
+                    .find(".price")
+                    .attr("name", `PurchaseItem[${index}].UnitPrice`);
             });
 
             i = $("#itemsBody tr").length;
@@ -253,27 +301,49 @@
 
             $("#itemsBody tr").each(function () {
 
-                let q = parseFloat($(this).find(".qty").val()) || 0;
-                let p = parseFloat($(this).find(".price").val()) || 0;
+                let qty =
+                    parseFloat($(this).find(".qty").val()) || 0;
 
-                let total = q * p;
+                let price =
+                    parseFloat($(this).find(".price").val()) || 0;
 
-                $(this).find(".row-total").text(total.toFixed(2));
+                let rowTotal = qty * price;
 
-                subtotal += total;
+                $(this)
+                    .find(".row-total")
+                    .html(rowTotal.toFixed(2));
+
+                subtotal += rowTotal;
             });
 
-            let discount = parseFloat($("#discount").val()) || 0;
-            let tax = parseFloat($("#tax").val()) || 0;
-            let vat = parseFloat($("#vat").val()) || 0;
-            let transport = parseFloat($("#transport").val()) || 0;
+            let discount =
+                parseFloat($("#discount").val()) || 0;
 
-            let grandTotal = subtotal + tax + vat + transport - discount;
+            let tax =
+                parseFloat($("#tax").val()) || 0;
 
-            $("#grandTotal").text(grandTotal.toFixed(2));
+            let vat =
+                parseFloat($("#vat").val()) || 0;
+
+            let transport =
+                parseFloat($("#transport").val()) || 0;
+
+            let grandTotal =
+                subtotal +
+                tax +
+                vat +
+                transport -
+                discount;
+
+            $("#grandTotal").val(grandTotal.toFixed(2));
         }
 
-        calc();
+        $(document).ready(function () {
+
+            calc();
+
+        });
 
     </script>
+
 }

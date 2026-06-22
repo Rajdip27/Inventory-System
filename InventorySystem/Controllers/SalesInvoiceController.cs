@@ -12,6 +12,7 @@ public class SalesInvoiceController : Controller
     private readonly IProductRepository _productRepository;
     private readonly ICustomerRepository _customerRepository;
     private readonly IAppLogger<SalesInvoiceController> _logger;
+
     public SalesInvoiceController(
         ISalesInvoiceRepository repo,
         IProductRepository productRepository,
@@ -23,26 +24,27 @@ public class SalesInvoiceController : Controller
         _customerRepository = customerRepository;
         _logger = logger;
     }
+
+    #region INDEX
     public async Task<IActionResult> Index(string search = "", int page = 1, int pageSize = 10)
     {
-        _logger.LogInfo($"SalesInvoice Index called | search: {search}, page: {page}, pageSize: {pageSize}");
+        _logger.LogInfo($"Index called | search:{search}");
 
         var pagination = await _repo.GetAllAsync(search, page, pageSize);
 
-        _logger.LogInfo($"SalesInvoice loaded | total: {pagination?.TotalItems}");
-
         return View(pagination);
     }
+    #endregion
+
+    #region CREATE & EDIT GET
     [HttpGet]
     public async Task<IActionResult> CreateAndEdit(long? id)
     {
-        _logger.LogInfo($"CreateAndEdit GET | id: {id}");
         ViewBag.Products = await _productRepository.GetProductDropdownAsync();
         ViewBag.Customers = await _customerRepository.GetCustomerDropdownAsync();
+
         if (id == null || id == 0)
         {
-            _logger.LogInfo("Opening Create Sales Invoice form");
-
             return View(new SalesInvoice
             {
                 InvoiceDate = DateTime.Now,
@@ -50,67 +52,88 @@ public class SalesInvoiceController : Controller
                 SalesItem = new List<SalesItem>()
             });
         }
+
         var invoice = await _repo.GetByIdAsync(id.Value);
+
         if (invoice == null)
         {
-            _logger.LogWarning($"Invoice not found | id: {id}");
             TempData["Error"] = "Invoice not found!";
             return RedirectToAction(nameof(Index));
         }
 
-        _logger.LogInfo($"Editing Invoice | id: {id}");
-
         return View(invoice);
     }
+    #endregion
+
+    #region CREATE & EDIT POST
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateAndEdit(SalesInvoice model)
     {
-        _logger.LogInfo($"CreateAndEdit POST | id: {model?.Id}");
+        _logger.LogInfo($"POST Create/Edit | Id:{model?.Id}");
 
+        // IMPORTANT: reload dropdowns (fix view crash)
+        ViewBag.Products = await _productRepository.GetProductDropdownAsync();
+        ViewBag.Customers = await _customerRepository.GetCustomerDropdownAsync();
+
+        // SERVER VALIDATION
         if (!ModelState.IsValid)
         {
-            _logger.LogWarning("ModelState invalid in SalesInvoice POST");
+            TempData["Error"] = "Please fix validation errors";
             return View(model);
         }
 
-        bool result = false;
+        if (model.SalesItem == null || model.SalesItem.Count == 0)
+        {
+            ModelState.AddModelError("", "Please add at least one product");
+            return View(model);
+        }
 
         try
         {
+            (bool success, string message) result;
+
             if (model.Id == 0)
             {
-                _logger.LogInfo("Creating Sales Invoice");
-
+                _logger.LogInfo("Creating invoice");
                 result = await _repo.AddAsync(model);
-
-                if (result)
-                    _logger.LogInfo($"Invoice created | {model.InvoiceNo}");
-                else
-                    _logger.LogError("Invoice create failed", null);
             }
             else
             {
-                _logger.LogInfo($"Updating Sales Invoice | id: {model.Id}");
-
+                _logger.LogInfo("Updating invoice");
                 result = await _repo.UpdateAsync(model);
-
-                if (result)
-                    _logger.LogInfo($"Invoice updated | id: {model.Id}");
-                else
-                    _logger.LogError("Invoice update failed", null);
             }
+
+            if (!result.success)
+            {
+                TempData["Error"] = result.message;
+                return View(model);
+            }
+
+            TempData["Success"] = result.message;
+            return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
         {
-            _logger.LogError("Exception in SalesInvoice CreateAndEdit", ex);
-            TempData["Error"] = "Unexpected error occurred!";
-            return RedirectToAction(nameof(Index));
+            _logger.LogError("Unexpected error in CreateAndEdit", ex);
+            TempData["Error"] = ex.Message;
+            return View(model);
         }
-
-        TempData[result ? "Success" : "Error"] =
-            result ? "Sales invoice saved successfully!" : "Operation failed!";
-
-        return RedirectToAction(nameof(Index));
     }
+
+    public async Task<IActionResult> Details(long id)
+    {
+        //_logger.LogInfo($"Details called | Id:{id}");
+
+        //var invoice = await _repo.GetByIdAsync(id);
+
+        //if (invoice == null)
+        //{
+        //    TempData["Error"] = "Invoice not found!";
+        //    return RedirectToAction(nameof(Index));
+        //}
+
+        return View();
+    }
+    #endregion
 }

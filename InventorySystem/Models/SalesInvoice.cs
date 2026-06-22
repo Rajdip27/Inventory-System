@@ -15,5 +15,5 @@ public class SalesInvoice:AuditableEntity
     public decimal PaidAmount { get; set; }
     public decimal DueAmount { get; set; }
     public ICollection<CustomerPayment> CustomerPayment { get; set; } = new List<CustomerPayment>();
-    public ICollection<SalesItem> SalesItem { get; set; } = new List<SalesItem>();
+    public List<SalesItem> SalesItem { get; set; } = new List<SalesItem>();
 }

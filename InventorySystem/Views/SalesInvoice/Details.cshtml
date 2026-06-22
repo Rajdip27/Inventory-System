@@ -1,0 +1,578 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IT Fix Service Center - Invoice</title>
+    <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: Arial, sans-serif;
+                background: #f0f0f0;
+                display: flex;
+                justify-content: center;
+                padding: 30px 10px;
+            }
+
+            .invoice-wrapper {
+                max-width: 720px;
+                width: 100%;
+                background: #fff;
+                color: #000;
+                border: 1px solid #ccc;
+                padding: 28px;
+            }
+
+            /* Header */
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 12px;
+            }
+
+            .company-name {
+                font-size: 22px;
+                font-weight: 700;
+                letter-spacing: 1px;
+                margin-bottom: 4px;
+            }
+
+            .company-info {
+                font-size: 12px;
+                color: #333;
+                line-height: 1.7;
+            }
+
+                .company-info a {
+                    color: #333;
+                    text-decoration: underline;
+                }
+
+            .logo-block {
+                text-align: center;
+            }
+
+            .logo-circle {
+                width: 82px;
+                height: 82px;
+                border: 2px solid #000;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 6px;
+            }
+
+            .logo-circle-inner {
+                text-align: center;
+                line-height: 1.3;
+            }
+
+                .logo-circle-inner .main {
+                    font-size: 10px;
+                    font-weight: 700;
+                }
+
+                .logo-circle-inner .sub {
+                    font-size: 7.5px;
+                    color: #555;
+                }
+
+            .invoice-title {
+                font-size: 18px;
+                font-weight: 700;
+                letter-spacing: 2px;
+                text-align: center;
+                margin-top: 4px;
+            }
+
+            hr.thick {
+                border: none;
+                border-top: 2px solid #000;
+                margin: 10px 0;
+            }
+
+            hr.thin {
+                border: none;
+                border-top: 1px solid #000;
+                margin: 14px 0;
+            }
+
+            /* Bill To + Invoice Meta */
+            .meta-row {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 10px;
+            }
+
+            .bill-to-label {
+                font-size: 11px;
+                font-weight: 700;
+                color: #555;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 5px;
+            }
+
+            .bill-to-name {
+                font-size: 13px;
+                font-weight: 700;
+                margin-bottom: 2px;
+            }
+
+            .bill-to-info {
+                font-size: 12px;
+                color: #333;
+                line-height: 1.7;
+            }
+
+            .meta-table {
+                font-size: 12px;
+                border-collapse: collapse;
+                margin-left: auto;
+            }
+
+                .meta-table td {
+                    padding: 2px 0 2px 8px;
+                }
+
+                .meta-table .label {
+                    color: #555;
+                    font-weight: 600;
+                    text-align: right;
+                    padding-right: 10px;
+                }
+
+            .paid-badge {
+                display: inline-block;
+                border: 2px solid #000;
+                padding: 3px 20px;
+                font-weight: 700;
+                font-size: 13px;
+                letter-spacing: 2px;
+                margin-top: 10px;
+                float: right;
+            }
+
+            /* Items Table */
+            .items-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 12px;
+            }
+
+                .items-table thead tr {
+                    background: #000;
+                    color: #fff;
+                }
+
+                .items-table thead th {
+                    padding: 8px 10px;
+                    text-align: left;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                }
+
+                    .items-table thead th.center {
+                        text-align: center;
+                    }
+
+                    .items-table thead th.right {
+                        text-align: right;
+                    }
+
+                .items-table tbody tr {
+                    border-bottom: 0.5px solid #ddd;
+                }
+
+                    .items-table tbody tr.alt {
+                        background: #f9f9f9;
+                    }
+
+                .items-table tbody td {
+                    padding: 12px 10px;
+                    color: #000;
+                }
+
+                    .items-table tbody td.desc {
+                        font-weight: 600;
+                    }
+
+                    .items-table tbody td.center {
+                        text-align: center;
+                    }
+
+                    .items-table tbody td.right {
+                        text-align: right;
+                        font-weight: 600;
+                    }
+
+            /* Totals */
+            .totals-wrap {
+                display: flex;
+                justify-content: flex-end;
+                margin-top: 10px;
+            }
+
+            .totals-table {
+                font-size: 12px;
+                min-width: 290px;
+                border-collapse: collapse;
+            }
+
+                .totals-table td {
+                    padding: 4px 0;
+                }
+
+                .totals-table .t-label {
+                    color: #555;
+                    text-align: right;
+                    padding-right: 14px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.4px;
+                }
+
+                .totals-table .t-value {
+                    text-align: right;
+                    min-width: 90px;
+                }
+
+                .totals-table tr.grand td {
+                    border-top: 2px solid #000;
+                    border-bottom: 2px solid #000;
+                    padding: 8px 0;
+                }
+
+                .totals-table tr.grand .t-label {
+                    font-weight: 700;
+                    font-size: 14px;
+                }
+
+                .totals-table tr.grand .t-value {
+                    font-weight: 700;
+                    font-size: 16px;
+                }
+
+            /* Terms */
+            .terms-title {
+                font-size: 13px;
+                font-weight: 700;
+                text-decoration: underline;
+                margin-bottom: 7px;
+            }
+
+            .terms-list {
+                padding-left: 18px;
+                font-size: 11px;
+                color: #222;
+                line-height: 1.85;
+            }
+
+                .terms-list li.highlight {
+                    font-weight: 600;
+                }
+
+                .terms-list li.small {
+                    font-size: 10.5px;
+                    color: #444;
+                }
+
+            /* Signatures */
+            .sig-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-end;
+                margin-top: 14px;
+            }
+
+            .sig-block {
+                text-align: center;
+                flex: 1;
+            }
+
+            .sig-line {
+                border-top: 1.5px solid #000;
+                margin-top: 48px;
+                padding-top: 6px;
+                font-size: 12px;
+                font-weight: 600;
+            }
+
+            .qr-box {
+                width: 72px;
+                height: 72px;
+                border: 1.5px solid #000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto;
+            }
+
+            .qr-inner {
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                grid-template-rows: repeat(7, 1fr);
+                width: 58px;
+                height: 58px;
+                gap: 1.5px;
+            }
+
+                .qr-inner span {
+                    background: #000;
+                    border-radius: 0.5px;
+                }
+
+                    .qr-inner span.w {
+                        background: #fff;
+                    }
+
+            @@media print {
+                body {
+                    background: #fff;
+                    padding: 0;
+                }
+
+                .invoice-wrapper {
+                    border: none;
+                    box-shadow: none;
+                }
+            }
+    </style>
+</head>
+<body>
+    <div class="invoice-wrapper">
+
+        <!-- HEADER -->
+        <div class="header">
+            <div>
+                <div class="company-name">IT FIX SERVICE CENTER LTD.</div>
+                <div class="company-info">
+                    Shop:553Rajuk Trade<br>
+                    Center:Khilkhet, Nikunja-2, Dhaka-1229<br>
+                    <a href="mailto:ayonifix@gmail.com">ayonifix@gmail.com</a><br>
+                    01795832359, 01883475382
+                </div>
+            </div>
+            <div class="logo-block">
+                <div class="logo-circle">
+                    <div class="logo-circle-inner">
+                        <div class="main">IT FIX</div>
+                        <div class="sub">SERVICE</div>
+                        <div class="sub">SOLUTION CENTER</div>
+                    </div>
+                </div>
+                <div class="invoice-title">INVOICE</div>
+            </div>
+        </div>
+
+        <hr class="thick">
+
+        <!-- BILL TO + META -->
+        <div class="meta-row">
+            <div>
+                <div class="bill-to-label">Bill To</div>
+                <div class="bill-to-name">Precisa Techno Trade LTD</div>
+                <div class="bill-to-info">
+                    IT Department<br>
+                    Uttara, Dhaka<br>
+                    +8801730063003<br>
+                    Remarks: Bill For Epson &amp; Hp
+                </div>
+            </div>
+            <div style="text-align:right;">
+                <table class="meta-table">
+                    <tr>
+                        <td class="label">Invoice No:</td>
+                        <td>#INV/2000/01522209</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Invoice Date:</td>
+                        <td>09/06/2026</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Bill Payment:</td>
+                        <td>Cash</td>
+                    </tr>
+                    <tr>
+                        <td class="label" style="padding-top:10px;">Sold By:</td>
+                        <td style="padding-top:10px;">Ayon Bhattacharya</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Sold To:</td>
+                        <td>(IFC)</td>
+                    </tr>
+                </table>
+                <div class="paid-badge">PAID</div>
+            </div>
+        </div>
+
+        <hr class="thick">
+
+        <!-- ITEMS TABLE -->
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th class="center">Qty</th>
+                    <th class="right">Unit Price</th>
+                    <th class="right">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="desc">01. Hp Printer Service Charge</td>
+                    <td class="center">1</td>
+                    <td class="right">1,500.00</td>
+                    <td class="right">1,500.00</td>
+                </tr>
+                <tr class="alt">
+                    <td class="desc">02. Epson Eco Tank Service Charge</td>
+                    <td class="center">1</td>
+                    <td class="right">1,500.00</td>
+                    <td class="right">1,500.00</td>
+                </tr>
+                <tr>
+                    <td class="desc">03. Epson 3150 Service Charge</td>
+                    <td class="center">1</td>
+                    <td class="right">1,500.00</td>
+                    <td class="right">1,500.00</td>
+                </tr>
+                <tr class="alt">
+                    <td class="desc">04. Epson Pick Detect Sensor</td>
+                    <td class="center">1</td>
+                    <td class="right">1,000.00</td>
+                    <td class="right">1,000.00</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- TOTALS -->
+        <div class="totals-wrap">
+            <table class="totals-table">
+                <tr>
+                    <td class="t-label">Subtotal</td>
+                    <td class="t-value">5,500.00</td>
+                </tr>
+                <tr>
+                    <td class="t-label">Discount</td>
+                    <td class="t-value">0.00</td>
+                </tr>
+                <tr>
+                    <td class="t-label">Subtotal Less Discount</td>
+                    <td class="t-value">5,500.00</td>
+                </tr>
+                <tr>
+                    <td class="t-label">Tax Rate</td>
+                    <td class="t-value">0.00%</td>
+                </tr>
+                <tr>
+                    <td class="t-label">Total Tax</td>
+                    <td class="t-value">0.00</td>
+                </tr>
+                <tr>
+                    <td class="t-label">Shipping/Handling</td>
+                    <td class="t-value">0.00</td>
+                </tr>
+                <tr class="grand">
+                    <td class="t-label">Total</td>
+                    <td class="t-value">5,500.0৳</td>
+                </tr>
+            </table>
+        </div>
+
+        <hr class="thin">
+
+        <!-- TERMS -->
+        <div>
+            <div class="terms-title">Terms &amp; Instructions</div>
+            <ol class="terms-list">
+                <li><strong>PLEASE KEEP THE FULL BOX FOR WARRANTY PURPOSE.</strong></li>
+                <li>Goods once sold will not be refunded &amp; changed.</li>
+                <li>The products under warranty will be repaired or replaced by the manufacturer company.</li>
+                <li class="highlight">Timing for the warranty process will be controlled by the manufacturer company.</li>
+                <li class="small">Manufacturer does not give warranty to Remote Control, Software, Data, Password/BIOS password, Cartridge, Toner, Inked, Roller, Drum, Element Cover, Maintenance kit, Cable applied with product, Gift free items, GPU used in data mining, if Sticker removed, Serial tampered, Compatible Toner/Ink used, Fungus and damp, Up-to 3 display date, Liquid spillage, Gum and Physically damaged etc.</li>
+            </ol>
+        </div>
+
+        <hr class="thin">
+
+        <!-- SIGNATURES -->
+        <div class="sig-row">
+            <div class="sig-block">
+                <div class="sig-line">Received By Signature</div>
+            </div>
+            <div class="sig-block">
+                <div class="qr-box">
+                    <svg width="58" height="58" viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Top-left finder -->
+                        <rect x="2" y="2" width="18" height="18" fill="#000" />
+                        <rect x="4" y="4" width="14" height="14" fill="#fff" />
+                        <rect x="6" y="6" width="10" height="10" fill="#000" />
+                        <!-- Top-right finder -->
+                        <rect x="38" y="2" width="18" height="18" fill="#000" />
+                        <rect x="40" y="4" width="14" height="14" fill="#fff" />
+                        <rect x="42" y="6" width="10" height="10" fill="#000" />
+                        <!-- Bottom-left finder -->
+                        <rect x="2" y="38" width="18" height="18" fill="#000" />
+                        <rect x="4" y="40" width="14" height="14" fill="#fff" />
+                        <rect x="6" y="42" width="10" height="10" fill="#000" />
+                        <!-- Data dots -->
+                        <rect x="22" y="2" width="4" height="4" fill="#000" />
+                        <rect x="28" y="2" width="4" height="4" fill="#000" />
+                        <rect x="32" y="6" width="4" height="4" fill="#000" />
+                        <rect x="22" y="8" width="4" height="4" fill="#000" />
+                        <rect x="28" y="10" width="4" height="4" fill="#000" />
+                        <rect x="22" y="14" width="4" height="4" fill="#000" />
+                        <rect x="32" y="14" width="4" height="4" fill="#000" />
+                        <rect x="2" y="22" width="4" height="4" fill="#000" />
+                        <rect x="8" y="22" width="4" height="4" fill="#000" />
+                        <rect x="14" y="22" width="4" height="4" fill="#000" />
+                        <rect x="22" y="22" width="4" height="4" fill="#000" />
+                        <rect x="28" y="22" width="4" height="4" fill="#000" />
+                        <rect x="34" y="22" width="4" height="4" fill="#000" />
+                        <rect x="40" y="22" width="4" height="4" fill="#000" />
+                        <rect x="52" y="22" width="4" height="4" fill="#000" />
+                        <rect x="2" y="28" width="4" height="4" fill="#000" />
+                        <rect x="10" y="28" width="4" height="4" fill="#000" />
+                        <rect x="22" y="28" width="4" height="4" fill="#000" />
+                        <rect x="30" y="28" width="4" height="4" fill="#000" />
+                        <rect x="38" y="28" width="4" height="4" fill="#000" />
+                        <rect x="46" y="28" width="4" height="4" fill="#000" />
+                        <rect x="52" y="28" width="4" height="4" fill="#000" />
+                        <rect x="4" y="34" width="4" height="4" fill="#000" />
+                        <rect x="12" y="34" width="4" height="4" fill="#000" />
+                        <rect x="20" y="34" width="4" height="4" fill="#000" />
+                        <rect x="28" y="34" width="4" height="4" fill="#000" />
+                        <rect x="36" y="34" width="4" height="4" fill="#000" />
+                        <rect x="44" y="34" width="4" height="4" fill="#000" />
+                        <rect x="52" y="34" width="4" height="4" fill="#000" />
+                        <rect x="22" y="40" width="4" height="4" fill="#000" />
+                        <rect x="30" y="40" width="4" height="4" fill="#000" />
+                        <rect x="38" y="40" width="4" height="4" fill="#000" />
+                        <rect x="52" y="40" width="4" height="4" fill="#000" />
+                        <rect x="22" y="46" width="4" height="4" fill="#000" />
+                        <rect x="28" y="46" width="4" height="4" fill="#000" />
+                        <rect x="36" y="46" width="4" height="4" fill="#000" />
+                        <rect x="44" y="46" width="4" height="4" fill="#000" />
+                        <rect x="22" y="52" width="4" height="4" fill="#000" />
+                        <rect x="32" y="52" width="4" height="4" fill="#000" />
+                        <rect x="40" y="52" width="4" height="4" fill="#000" />
+                        <rect x="48" y="52" width="4" height="4" fill="#000" />
+                    </svg>
+                </div>
+            </div>
+            <div class="sig-block">
+                <div class="sig-line">Authorized Signature</div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
