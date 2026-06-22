@@ -123,17 +123,17 @@ public class SalesInvoiceController : Controller
 
     public async Task<IActionResult> Details(long id)
     {
-        //_logger.LogInfo($"Details called | Id:{id}");
+        _logger.LogInfo($"Details called | Id:{id}");
 
-        //var invoice = await _repo.GetByIdAsync(id);
+        var invoice = await _repo.GetByIdAsync(id);
 
-        //if (invoice == null)
-        //{
-        //    TempData["Error"] = "Invoice not found!";
-        //    return RedirectToAction(nameof(Index));
-        //}
+        if (invoice == null)
+        {
+            TempData["Error"] = "Invoice not found!";
+            return RedirectToAction(nameof(Index));
+        }
 
-        return View();
+        return View(invoice);
     }
     #endregion
 }
