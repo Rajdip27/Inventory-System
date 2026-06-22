@@ -1,608 +1,669 @@
-﻿<!DOCTYPE html>
-<html>
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INVOICE - FIX SERVICE CENTER LTD.</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invoice</title>
     <style>
-            .inv-root {
+            /* ── RESET ── */
+            * {
                 margin: 0;
-                padding: 40px 16px;
-                font-family: Arial, Helvetica, sans-serif;
-                -webkit-font-smoothing: auto;
-                background-color: #f0f0f0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                /* font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif; */
+                font-size: 12px;
+                background: #f0f0f0;
                 color: #000000;
-                min-height: 100vh;
+                padding: 20px;
+                margin: 0;
                 display: flex;
                 justify-content: center;
-                align-items: flex-start;
-            }
-
-            .inv-page {
-                max-width: 800px;
-                width: 100%;
-                background-color: #ffffff;
-                border: 1px solid #d0d0d0;
-                padding: 48px;
-                box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            }
-
-            .inv-top-line {
-                height: 4px;
-                background-color: #1a5276;
-                margin: -48px -48px 36px -48px;
-            }
-
-            .inv-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
-                margin-bottom: 32px;
-            }
-
-            .inv-company {
-            }
-
-            .inv-company-name {
-                font-size: 20px;
-                font-weight: bold;
-                color: #000000;
-                margin: 0 0 4px 0;
-            }
-
-            .inv-company-tag {
-                font-size: 11px;
-                color: #1a5276;
-                font-weight: normal;
-                letter-spacing: 0.5px;
-                margin: 0 0 10px 0;
-            }
-
-            .inv-company-info {
-                font-size: 12px;
-                color: #444444;
-                line-height: 1.7;
-                margin: 0;
-            }
-
-            .inv-invoice-label {
-                font-size: 32px;
-                font-weight: bold;
-                color: #000000;
-                text-align: right;
-                margin: 0 0 12px 0;
-            }
-
-            .inv-meta-row {
-                font-size: 12px;
-                color: #444444;
-                text-align: right;
-                line-height: 1.8;
-                margin: 0;
-            }
-
-            .inv-meta-val {
-                color: #000000;
-                font-weight: bold;
-            }
-
-            .inv-hr {
-                border: none;
-                border-top: 2px solid #000000;
-                margin: 0 0 28px 0;
-            }
-
-            .inv-hr-light {
-                border: none;
-                border-top: 1px solid #dddddd;
-                margin: 0 0 28px 0;
-            }
-
-            .inv-billto {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 28px;
-            }
-
-            .inv-billto-block {
-            }
-
-            .inv-label-sm {
-                font-size: 11px;
-                font-weight: bold;
-                color: #000000;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-                margin: 0 0 8px 0;
-            }
-
-            .inv-client-name {
-                font-size: 14px;
-                font-weight: bold;
-                color: #000000;
-                margin: 0 0 4px 0;
-            }
-
-            .inv-client-info {
-                font-size: 12px;
-                color: #444444;
-                line-height: 1.7;
-                margin: 0;
-            }
-
-            .inv-status {
-                display: inline-block;
-                padding: 4px 14px;
-                border: 1px solid #1a5276;
-                border-radius: 3px;
-                font-size: 11px;
-                font-weight: bold;
-                color: #1a5276;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                margin-top: 8px;
-            }
-
-            .inv-table-wrap {
-                margin-bottom: 24px;
-            }
-
-            .inv-table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-
-            .inv-thead {
-            }
-
-            .inv-th {
-                padding: 10px 14px;
-                font-size: 11px;
-                font-weight: bold;
-                color: #ffffff;
-                background-color: #1a5276;
-                text-align: left;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                border: 1px solid #154360;
-            }
-
-            .inv-th-right {
-                text-align: right;
-            }
-
-            .inv-th-center {
-                text-align: center;
-            }
-
-            .inv-td {
-                padding: 12px 14px;
-                font-size: 13px;
-                color: #000000;
-                border: 1px solid #dddddd;
-                vertical-align: top;
-            }
-
-            .inv-td-id {
-                font-weight: bold;
-                text-align: center;
-                width: 50px;
-                background-color: #f7f7f7;
-            }
-
-            .inv-td-desc-name {
-                font-weight: bold;
-                font-size: 13px;
-                color: #000000;
-                margin: 0 0 2px 0;
-            }
-
-            .inv-td-desc-sub {
-                font-size: 11px;
-                color: #777777;
-                margin: 0;
-            }
-
-            .inv-td-qty {
-                text-align: center;
-                color: #444444;
-            }
-
-            .inv-td-amt {
-                text-align: right;
-                font-weight: bold;
-                color: #000000;
-            }
-
-            .inv-tbody-row:hover {
-                background-color: #f9f9f9;
-            }
-
-            .inv-totals {
-                display: flex;
-                justify-content: flex-end;
-                margin-bottom: 28px;
-            }
-
-            .inv-totals-box {
-                width: 260px;
-                border: 1px solid #dddddd;
-            }
-
-            .inv-totals-row {
-                display: flex;
-                justify-content: space-between;
                 align-items: center;
-                padding: 10px 16px;
-                border-bottom: 1px solid #eeeeee;
+                min-height: 100vh;
             }
 
-                .inv-totals-row:last-child {
-                    border-bottom: none;
-                }
+            /* ── A4 PAGE ── */
+           /*  .invoice-wrapper {
+                width: 210mm;
+                margin: 0 auto;
+                padding: 10mm 12mm 12mm 12mm;
+                background: #ffffff;
+                position: relative;
+                min-height: 297mm;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            } */
 
-            .inv-totals-label {
-                font-size: 13px;
-                color: #444444;
+            /* ── HEADER ── */
+            .header {
+                border-bottom: 3px solid #000000;
+                padding-bottom: 10px;
+                margin-bottom: 14px;
+                overflow: hidden;
             }
 
-            .inv-totals-label-bold {
-                font-size: 13px;
-                font-weight: bold;
-                color: #000000;
+            .header-left {
+                float: left;
+                width: 60%;
             }
 
-            .inv-totals-val {
-                font-size: 13px;
-                color: #000000;
+            .header-right {
+                float: right;
+                width: 40%;
+                text-align: right;
+                padding-top: 8px;
             }
 
-            .inv-totals-total {
-                background-color: #1a5276;
-                border-bottom: none;
-            }
-
-                .inv-totals-total .inv-totals-label-bold {
-                    color: #ffffff;
-                }
-
-            .inv-totals-big {
-                font-size: 18px;
-                font-weight: bold;
-                color: #ffffff;
-            }
-
-            .inv-notes {
-                padding: 14px 16px;
-                background-color: #f7f7f7;
-                border: 1px solid #e0e0e0;
-                margin-bottom: 32px;
-            }
-
-            .inv-notes-label {
-                font-size: 11px;
-                font-weight: bold;
-                color: #000000;
+            .company-name {
+                font-size: 22px;
+                font-weight: 900;
                 text-transform: uppercase;
                 letter-spacing: 1px;
-                margin: 0 0 6px 0;
+                color: #000000;
             }
 
-            .inv-notes-text {
-                font-size: 12px;
-                color: #444444;
+            .company-details {
+                font-size: 11px;
+              /*   color: #444444; */
                 line-height: 1.7;
-                margin: 0;
+                margin-top: 4px;
             }
 
-            .inv-footer {
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-end;
-                padding-top: 28px;
-                border-top: 1px solid #dddddd;
+                .company-details a {
+                    color: #000000;
+                    text-decoration: none;
+                    font-weight: 500;
+                }
+
+            .invoice-title {
+                font-size: 26px;
+                font-weight: 900;
+                letter-spacing: 4px;
+                text-transform: uppercase;
+                color: #000000;
+                position: relative;
             }
 
-            .inv-sig-area {
+                .invoice-title::after {
+                    content: '';
+                    display: block;
+                    width: 60px;
+                    height: 3px;
+                    background: #000000;
+                    margin-left: auto;
+                    margin-top: 4px;
+                }
+
+            .clearfix {
+                clear: both;
             }
 
-            .inv-sig-line {
-                width: 200px;
-                height: 1px;
-                border-bottom: 1px solid #000000;
+            /* ── INFO SECTION ── */
+            .info-section {
+                margin-bottom: 16px;
+                overflow: hidden;
+                padding: 8px 0;
+            }
+
+            .bill-to {
+                float: left;
+                width: 50%;
+                padding-right: 20px;
+            }
+
+            .bill-to-label {
+                font-size: 10px;
+                font-weight: 700;
+               /*  color: #888888; */
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                border-bottom: 2px solid #000000;
+                padding-bottom: 3px;
+                display: inline-block;
                 margin-bottom: 6px;
             }
 
-            .inv-sig-label {
-                font-size: 10px;
-                color: #777777;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                margin: 0 0 2px 0;
-            }
-
-            .inv-sig-name {
-                font-size: 13px;
-                font-weight: bold;
+            .client-name {
+                font-size: 15px;
+                font-weight: 700;
                 color: #000000;
-                margin: 0;
+                margin-bottom: 4px;
             }
 
-            .inv-qr-area {
+            .client-details {
+                font-size: 11px;
+               /*  color: #444444; */
+                line-height: 1.7;
+            }
+
+            .invoice-meta {
+                float: right;
+                width: 50%;
+                padding-left: 20px;
+            }
+
+            .meta-row {
+                font-size: 11px;
+                padding: 3px 0;
+                line-height: 1.6;
+                text-align: right;
                 display: flex;
-                flex-direction: column;
-                align-items: flex-end;
+                justify-content: flex-end;
+                align-items: center;
             }
 
-            .inv-qr-box {
+            .meta-label {
+                font-weight: 600;
+               /*  color: #888888; */
+                min-width: 95px;
+                text-align: right;
+                text-transform: uppercase;
+                font-size: 10px;
+                letter-spacing: 0.5px;
+            }
+
+            .meta-value {
+                color: #000000;
+                font-weight: 600;
+                min-width: 150px;
+                text-align: left;
+                padding-left: 12px;
+            }
+
+            .sold-by {
+                font-size: 11px;
+               /*  color: #444444; */
+                margin-top: 6px;
+                line-height: 1.7;
+                text-align: right;
+                padding-top: 4px;
+                border-top: 1px dashed #dddddd;
+            }
+
+                .sold-by strong {
+                    color: #000000;
+                    font-weight: 700;
+                }
+
+            .paid-badge {
+                display: inline-block;
+                font-size: 12px;
+                font-weight: 900;
+                color: #000000;
+                border: 3px solid #000000;
+                padding: 3px 22px;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                margin-top: 6px;
+                background: #ffffff;
+            }
+
+            /* ── REMARKS ── */
+            .remarks {
+                font-size: 11px;
+               /*  color: #555555; */
+                margin-bottom: 12px;
+                padding: 6px 0;
+            }
+
+            .remarks-label {
+                font-weight: 700;
+                color: #000000;
+            }
+
+            /* ── ITEMS TABLE ── */
+            .items-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 8px;
+            }
+
+                .items-table thead th {
+                    background: #000000;
+                    color: #ffffff;
+                    font-size: 10px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    padding: 10px 12px;
+                    text-align: center;
+                }
+
+                    .items-table thead th.desc-header {
+                        text-align: left;
+                        width: 52%;
+                    }
+
+                .items-table tbody td {
+                    font-size: 12px;
+                    color: #000000;
+                    padding: 11px 12px;
+                    border-bottom: 1px solid #e8e8e8;
+                    vertical-align: middle;
+                }
+
+                .items-table tbody tr:last-child td {
+                    border-bottom: 3px solid #000000;
+                }
+
+            .desc-cell {
+                font-weight: 600;
+                text-align: left;
+            }
+
+            .qty-cell,
+            .unit-cell,
+            .total-cell {
+                text-align: center;
+                font-weight: 500;
+            }
+
+            /* ── TOTALS ── */
+            .totals-section {
+                margin-top: 6px;
+                overflow: hidden;
+                padding: 6px 0;
+            }
+
+            .totals-table {
+                float: right;
+                border-collapse: collapse;
+                width: 300px;
+            }
+
+                .totals-table td {
+                    font-size: 11px;
+                    padding: 5px 14px;
+                    border-bottom: 1px solid #e8e8e8;
+                    color: #000000;
+                }
+
+            .totals-label {
+                font-weight: 600;
+               /*  color: #888888; */
+                text-align: left;
+                text-transform: uppercase;
+                font-size: 10px;
+                letter-spacing: 0.5px;
+            }
+
+            .totals-value {
+                font-weight: 600;
+                color: #000000;
+                text-align: right;
+                white-space: nowrap;
+            }
+
+            .grand-total td {
+                padding: 10px 14px 6px 14px !important;
+                border-bottom: none !important;
+                border-top: 3px solid #000000;
+            }
+
+            .grand-label {
+                font-size: 15px;
+                font-weight: 800;
+                text-transform: uppercase;
+                color: #000000;
+                text-align: left;
+                letter-spacing: 1px;
+            }
+
+            .grand-value {
+                font-size: 22px;
+                font-weight: 900;
+                color: #000000;
+                text-align: right;
+                white-space: nowrap;
+            }
+
+            /* ── TERMS ── */
+            .terms-section {
+                margin-top: 18px;
+                padding: 10px 0;
+                border-top: 2px solid #000000;
+            }
+
+            .terms-title {
+                font-size: 12px;
+                font-weight: 700;
+                color: #000000;
+                margin-bottom: 6px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+
+            .terms-list {
+                font-size: 10px;
+               /*  color: #444444; */
+                line-height: 1.6;
+                padding-left: 0;
+                list-style: none;
+            }
+
+                .terms-list li {
+                    padding: 2px 0;
+                }
+
+                    .terms-list li::before {
+                        content: counter(item) ". ";
+                        font-weight: 700;
+                        color: #000000;
+                    }
+
+                .terms-list li {
+                    counter-increment: item;
+                }
+
+            .terms-list {
+                counter-reset: item;
+            }
+
+            /* ── FOOTER ── */
+            .footer {
+                margin-top: 28px;
+                padding: 14px 0 8px 0;
+                border-top: 2px solid #000000;
+                overflow: hidden;
+            }
+
+            .signature-left {
+                float: left;
+                width: 30%;
+                text-align: center;
+            }
+
+            .signature-center {
+                float: left;
+                width: 40%;
+                text-align: center;
+            }
+
+            .signature-right {
+                float: right;
+                width: 30%;
+                text-align: center;
+            }
+
+            .signature-line {
+                border: none;
+                border-top: 2px solid #000000;
+                width: 160px;
+                margin: 0 auto 5px auto;
+            }
+
+            .signature-label {
+                font-size: 10px;
+                font-weight: 600;
+               /*  color: #888888; */
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+            }
+
+            .qr-code {
                 width: 72px;
                 height: 72px;
-                background-color: #ffffff;
-                border: 1px solid #dddddd;
-                padding: 4px;
+                display: block;
+                margin: 0 auto 5px auto;
             }
 
-            .inv-qr-svg {
-                width: 100%;
-                height: 100%;
-            }
-
-            .inv-qr-text {
-                font-size: 10px;
-                color: #999999;
-                margin: 4px 0 0 0;
-            }
-
-            .inv-bottom {
-                display: flex;
-                justify-content: center;
-                gap: 24px;
-                padding-top: 20px;
-                border-top: 1px solid #eeeeee;
-                margin-top: 24px;
-            }
-
-            .inv-bottom-item {
-                font-size: 10px;
-                color: #999999;
-            }
-
-            @@media (max-width: 640px) {
-                .inv-page {
-                    padding: 24px 20px;
+            /* ── PRINT STYLES ── */
+            @@media print {
+                body {
+                    background: #ffffff;
+                    padding: 0;
+                    margin: 0;
+                    display: block;
                 }
 
-                .inv-top-line {
-                    margin: -24px -20px 24px -20px;
-                }
-
-                .inv-header {
-                    flex-direction: column;
-                    gap: 16px;
-                }
-
-                .inv-invoice-label,
-                .inv-meta-row {
-                    text-align: left;
-                }
-
-                .inv-billto {
-                    flex-direction: column;
-                    gap: 16px;
-                }
-
-                .inv-td-desc-sub {
-                    display: none;
-                }
-
-                .inv-th,
-                .inv-td {
-                    padding: 8px 8px;
-                    font-size: 11px;
-                }
-
-                .inv-totals-box {
+                .invoice-wrapper {
                     width: 100%;
+                    padding: 10mm 12mm;
+                    min-height: auto;
+                    box-shadow: none;
                 }
 
-                .inv-footer {
-                    flex-direction: column;
-                    align-items: flex-start;
-                    gap: 24px;
-                }
-
-                .inv-qr-area {
-                    align-items: flex-start;
-                }
-
-                .inv-bottom {
-                    flex-wrap: wrap;
-                    gap: 8px 16px;
+                .items-table tbody td {
+                    border-bottom: 1px solid #cccccc;
                 }
             }
     </style>
 </head>
 <body>
-    <div class="inv-root">
-        <div class="inv-page">
-            <div class="inv-top-line"></div>
+    <div class="invoice-wrapper">
 
-            <div class="inv-header">
-                <div class="inv-company">
-                    <div class="inv-company-name">FIX SERVICE CENTER LTD.</div>
-                    <div class="inv-company-tag">Authorized Service Provider</div>
-                    <div class="inv-company-info">
-                        123 Tech Avenue, Suite 408<br>
-                        Dhaka 1207, Bangladesh<br>
-                        Phone: +880 2-8888-001<br>
-                        Email: info@fixservicecenter.com
-                    </div>
-                </div>
-                <div>
-                    <div class="inv-invoice-label">INVOICE</div>
-                    <div class="inv-meta-row">
-                        Invoice No: <span class="inv-meta-val">FSC-2025-0047</span><br>
-                        Date: <span class="inv-meta-val">June 20, 2025</span><br>
-                        Due Date: <span class="inv-meta-val">July 20, 2025</span>
-                    </div>
-                    <div class="inv-status">Paid</div>
+        <!-- ══ HEADER ══ -->
+        <div class="header">
+            <div class="header-left">
+                <div class="company-name">IT Fix Service Center Ltd.</div>
+                <div class="company-details">
+                    Shop: 553 Rajuk Trade<br />
+                    Centar; Khilkhet, Nikunja-2, Dhaka<br />
+                    <a href="mailto:ayonitfix@gmail.com">ayonitfix@gmail.com</a><br />
+                    01795832359, 01883475382
                 </div>
             </div>
-
-            <hr class="inv-hr">
-
-            <div class="inv-billto">
-                <div class="inv-billto-block">
-                    <div class="inv-label-sm">Bill To</div>
-                    <div class="inv-client-name">Precise Techno Trade LTD.</div>
-                    <div class="inv-client-info">
-                        456 Commerce Street, Level 3<br>
-                        Dhaka 1000, Bangladesh<br>
-                        Attention: Mr. Rahim Uddin<br>
-                        Phone: +880 1712-345678
-                    </div>
-                </div>
-                <div class="inv-billto-block">
-                    <div class="inv-label-sm">Payment Method</div>
-                    <div class="inv-client-info">
-                        Bank Transfer<br>
-                        Account: FIX SERVICE CENTER LTD.<br>
-                        Bank: Standard Chartered Bank<br>
-                        A/C No: ****-****-7890
-                    </div>
-                </div>
+            <div class="header-right">
+                <div class="invoice-title">INVOICE</div>
             </div>
-
-            <div class="inv-table-wrap">
-                <table class="inv-table">
-                    <thead class="inv-thead">
-                        <tr>
-                            <th class="inv-th inv-th-center">#</th>
-                            <th class="inv-th">Description</th>
-                            <th class="inv-th inv-th-center">Qty</th>
-                            <th class="inv-th inv-th-right">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="inv-tbody-row">
-                            <td class="inv-td inv-td-id">01</td>
-                            <td class="inv-td">
-                                <div class="inv-td-desc-name">HP LaserJet Printer Maintenance</div>
-                                <div class="inv-td-desc-sub">HP LaserJet Pro M404dn — Full cleaning, fuser replacement & calibration</div>
-                            </td>
-                            <td class="inv-td inv-td-qty">1</td>
-                            <td class="inv-td inv-td-amt">৳ 1,800</td>
-                        </tr>
-                        <tr class="inv-tbody-row">
-                            <td class="inv-td inv-td-id">02</td>
-                            <td class="inv-td">
-                                <div class="inv-td-desc-name">Epson L3150 Ink Tank Service</div>
-                                <div class="inv-td-desc-sub">Print head cleaning, ink system flush & nozzle check</div>
-                            </td>
-                            <td class="inv-td inv-td-qty">1</td>
-                            <td class="inv-td inv-td-amt">৳ 1,200</td>
-                        </tr>
-                        <tr class="inv-tbody-row">
-                            <td class="inv-td inv-td-id">03</td>
-                            <td class="inv-td">
-                                <div class="inv-td-desc-name">Epson EcoTank L6290 Repair</div>
-                                <div class="inv-td-desc-sub">Paper feed mechanism repair & firmware update</div>
-                            </td>
-                            <td class="inv-td inv-td-qty">1</td>
-                            <td class="inv-td inv-td-amt">৳ 1,200</td>
-                        </tr>
-                        <tr class="inv-tbody-row">
-                            <td class="inv-td inv-td-id">04</td>
-                            <td class="inv-td">
-                                <div class="inv-td-desc-name">On-site Diagnostic & Support</div>
-                                <div class="inv-td-desc-sub">Travel & on-site inspection for all listed devices</div>
-                            </td>
-                            <td class="inv-td inv-td-qty">1</td>
-                            <td class="inv-td inv-td-amt">৳ 800</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="inv-totals">
-                <div class="inv-totals-box">
-                    <div class="inv-totals-row">
-                        <div class="inv-totals-label">Subtotal</div>
-                        <div class="inv-totals-val">৳ 5,000</div>
-                    </div>
-                    <div class="inv-totals-row">
-                        <div class="inv-totals-label">VAT (0%)</div>
-                        <div class="inv-totals-val">৳ 0</div>
-                    </div>
-                    <div class="inv-totals-row">
-                        <div class="inv-totals-label">Discount</div>
-                        <div class="inv-totals-val">৳ 0</div>
-                    </div>
-                    <div class="inv-totals-row inv-totals-total">
-                        <div class="inv-totals-label-bold">Total</div>
-                        <div class="inv-totals-big">৳ 5,000</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="inv-notes">
-                <div class="inv-notes-label">Notes</div>
-                <div class="inv-notes-text">
-                    Payment is due within 30 days of the invoice date. All services carry a 90-day warranty from the date of completion. For any inquiries regarding this invoice, please contact our accounts department.
-                </div>
-            </div>
-
-            <div class="inv-footer">
-                <div class="inv-sig-area">
-                    <div class="inv-sig-line"></div>
-                    <div class="inv-sig-label">Authorized Signature</div>
-                    <div class="inv-sig-name">FIX SERVICE CENTER LTD.</div>
-                </div>
-                <div class="inv-qr-area">
-                    <div class="inv-qr-box">
-                        <svg class="inv-qr-svg" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="25" height="25" fill="#fff" />
-                            <rect x="1" y="1" width="7" height="7" fill="#000" rx="1" />
-                            <rect x="2" y="2" width="5" height="5" fill="#fff" />
-                            <rect x="3" y="3" width="3" height="3" fill="#000" />
-                            <rect x="17" y="1" width="7" height="7" fill="#000" rx="1" />
-                            <rect x="18" y="2" width="5" height="5" fill="#fff" />
-                            <rect x="19" y="3" width="3" height="3" fill="#000" />
-                            <rect x="1" y="17" width="7" height="7" fill="#000" rx="1" />
-                            <rect x="2" y="18" width="5" height="5" fill="#fff" />
-                            <rect x="3" y="19" width="3" height="3" fill="#000" />
-                            <rect x="10" y="1" width="2" height="2" fill="#000" />
-                            <rect x="13" y="1" width="2" height="2" fill="#000" />
-                            <rect x="10" y="4" width="2" height="2" fill="#000" />
-                            <rect x="10" y="10" width="2" height="2" fill="#000" />
-                            <rect x="13" y="10" width="2" height="2" fill="#000" />
-                            <rect x="17" y="10" width="2" height="2" fill="#000" />
-                            <rect x="22" y="10" width="2" height="2" fill="#000" />
-                            <rect x="10" y="13" width="2" height="2" fill="#000" />
-                            <rect x="17" y="13" width="2" height="2" fill="#000" />
-                            <rect x="22" y="13" width="2" height="2" fill="#000" />
-                            <rect x="10" y="17" width="2" height="2" fill="#000" />
-                            <rect x="13" y="17" width="2" height="2" fill="#000" />
-                            <rect x="17" y="17" width="2" height="2" fill="#000" />
-                            <rect x="20" y="17" width="2" height="2" fill="#000" />
-                            <rect x="22" y="20" width="2" height="2" fill="#000" />
-                            <rect x="13" y="22" width="2" height="2" fill="#000" />
-                            <rect x="17" y="22" width="2" height="2" fill="#000" />
-                            <rect x="20" y="22" width="2" height="2" fill="#000" />
-                            <rect x="22" y="22" width="2" height="2" fill="#000" />
-                        </svg>
-                    </div>
-                    <div class="inv-qr-text">Scan to verify</div>
-                </div>
-            </div>
-
-            <div class="inv-bottom">
-                <div class="inv-bottom-item">Company Reg: CH-2024-01583</div>
-                <div class="inv-bottom-item">VAT Reg: N/A</div>
-                <div class="inv-bottom-item">Terms: Net 30 Days</div>
-                <div class="inv-bottom-item">Page: 1 of 1</div>
-            </div>
+            <div class="clearfix"></div>
         </div>
+
+        <!-- ══ INFO SECTION ══ -->
+        <div class="info-section">
+            <div class="bill-to">
+                <div class="bill-to-label">Bill To</div>
+                <div class="client-name">Precisa Techno Trade LTD</div>
+                <div class="client-details">
+                    IT Department<br />
+                    Uttara, Dhaka<br />
+                    +8801730053003
+                </div>
+            </div>
+            <div class="invoice-meta">
+                <div class="meta-row">
+                    <span class="meta-label">Invoice No:</span>
+                    <span class="meta-value">#INV000070522259</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Invoice Date:</span>
+                    <span class="meta-value">17/06/2026</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Payment:</span>
+                    <span class="meta-value">Cash</span>
+                </div>
+                <div class="sold-by">
+                    <strong>Sold By:</strong> Ayon Bhattacharya &nbsp;|&nbsp; <strong>Sold To:</strong> (IFC)
+                </div>
+                <div style="text-align: right;">
+                    <span class="paid-badge">✓ PAID</span>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+        <!-- ══ REMARKS ══ -->
+        <div class="remarks">
+            <span class="remarks-label">Remarks :</span>
+        </div>
+
+        <!-- ══ ITEMS TABLE ══ -->
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th class="desc-header">Description</th>
+                    <th>QTY</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="desc-cell">01. HP 404dn Printer Service Charge</td>
+                    <td class="qty-cell">1</td>
+                    <td class="unit-cell">1500.00</td>
+                    <td class="total-cell">1500.00</td>
+                </tr>
+                <tr>
+                    <td class="desc-cell">02. HP 4103dn Printer Service Charge</td>
+                    <td class="qty-cell">1</td>
+                    <td class="unit-cell">1500.00</td>
+                    <td class="total-cell">1500.00</td>
+                </tr>
+                <tr>
+                    <td class="desc-cell">03. HP 404dn Pick-up Roll</td>
+                    <td class="qty-cell">1</td>
+                    <td class="unit-cell">1050.00</td>
+                    <td class="total-cell">1050.00</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ══ TOTALS ══ -->
+        <div class="totals-section">
+            <table class="totals-table">
+                <tr>
+                    <td class="totals-label">Subtotal</td>
+                    <td class="totals-value">4050.00</td>
+                </tr>
+                <tr>
+                    <td class="totals-label">Discount</td>
+                    <td class="totals-value">0.00</td>
+                </tr>
+                <tr>
+                    <td class="totals-label">Subtotal Less Discount</td>
+                    <td class="totals-value">4050.00</td>
+                </tr>
+                <tr>
+                    <td class="totals-label">Tax Rate</td>
+                    <td class="totals-value">0.00%</td>
+                </tr>
+                <tr>
+                    <td class="totals-label">Total Tax</td>
+                    <td class="totals-value">0.00</td>
+                </tr>
+                <tr>
+                    <td class="totals-label">Shipping/Handling</td>
+                    <td class="totals-value">0.00</td>
+                </tr>
+                <tr class="grand-total">
+                    <td class="grand-label">Total</td>
+                    <td class="grand-value">4,050.0 &#2547;</td>
+                </tr>
+            </table>
+            <div class="clearfix"></div>
+        </div>
+
+        <!-- ══ TERMS ══ -->
+        <div class="terms-section">
+            <div class="terms-title">Terms &amp; Instructions</div>
+            <ul class="terms-list">
+                <li>PLEASE KEEP THE FULL BOX FOR WARRANTY PURPOSE.</li>
+                <li>Goods once sold will not be refunded &amp; changed.</li>
+                <li>The products under warranty will be repaired or replaced by the manufacturer company.</li>
+                <li>Timing for the warranty process will be controlled by the manufacturer company.</li>
+                <li>Manufacturer does not give warranty to Remote Control, Software, Data, Password/BIOS password, Cartridge, Toner, Head, Roller, Drum, Element Cover, Maintenance kit, Cable supplied with product, Gift/Free items, GPU used in data mining, if Sticker-removed, Serial tempered, Compatible Toner/Ink used, Fungus and damp, Up-to 3 display dots, Liquid spillage, Burnt and Physically-damaged etc.</li>
+            </ul>
+        </div>
+
+        <!-- ══ FOOTER ══ -->
+        <div class="footer">
+            <div class="signature-left">
+                <hr class="signature-line" />
+                <div class="signature-label">Received By Signature</div>
+            </div>
+            <div class="signature-center">
+                <svg class="qr-code" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="4" y="4" width="22" height="22" fill="#000000" />
+                    <rect x="7" y="7" width="16" height="16" fill="#ffffff" />
+                    <rect x="10" y="10" width="10" height="10" fill="#000000" />
+                    <rect x="54" y="4" width="22" height="22" fill="#000000" />
+                    <rect x="57" y="7" width="16" height="16" fill="#ffffff" />
+                    <rect x="60" y="10" width="10" height="10" fill="#000000" />
+                    <rect x="4" y="54" width="22" height="22" fill="#000000" />
+                    <rect x="7" y="57" width="16" height="16" fill="#ffffff" />
+                    <rect x="10" y="60" width="10" height="10" fill="#000000" />
+                    <rect x="30" y="4" width="4" height="4" fill="#000000" />
+                    <rect x="36" y="4" width="4" height="4" fill="#000000" />
+                    <rect x="44" y="4" width="4" height="4" fill="#000000" />
+                    <rect x="30" y="10" width="4" height="4" fill="#000000" />
+                    <rect x="38" y="10" width="4" height="4" fill="#000000" />
+                    <rect x="44" y="10" width="4" height="4" fill="#000000" />
+                    <rect x="30" y="16" width="4" height="4" fill="#000000" />
+                    <rect x="36" y="16" width="4" height="4" fill="#000000" />
+                    <rect x="42" y="16" width="4" height="4" fill="#000000" />
+                    <rect x="4" y="30" width="4" height="4" fill="#000000" />
+                    <rect x="10" y="30" width="4" height="4" fill="#000000" />
+                    <rect x="18" y="30" width="4" height="4" fill="#000000" />
+                    <rect x="4" y="36" width="4" height="4" fill="#000000" />
+                    <rect x="14" y="36" width="4" height="4" fill="#000000" />
+                    <rect x="22" y="36" width="4" height="4" fill="#000000" />
+                    <rect x="4" y="42" width="4" height="4" fill="#000000" />
+                    <rect x="10" y="42" width="4" height="4" fill="#000000" />
+                    <rect x="16" y="42" width="4" height="4" fill="#000000" />
+                    <rect x="22" y="42" width="4" height="4" fill="#000000" />
+                    <rect x="4" y="48" width="4" height="4" fill="#000000" />
+                    <rect x="16" y="48" width="4" height="4" fill="#000000" />
+                    <rect x="30" y="30" width="4" height="4" fill="#000000" />
+                    <rect x="36" y="30" width="4" height="4" fill="#000000" />
+                    <rect x="44" y="30" width="4" height="4" fill="#000000" />
+                    <rect x="50" y="30" width="4" height="4" fill="#000000" />
+                    <rect x="30" y="36" width="4" height="4" fill="#000000" />
+                    <rect x="40" y="36" width="4" height="4" fill="#000000" />
+                    <rect x="50" y="36" width="4" height="4" fill="#000000" />
+                    <rect x="34" y="42" width="4" height="4" fill="#000000" />
+                    <rect x="44" y="42" width="4" height="4" fill="#000000" />
+                    <rect x="30" y="48" width="4" height="4" fill="#000000" />
+                    <rect x="36" y="48" width="4" height="4" fill="#000000" />
+                    <rect x="42" y="48" width="4" height="4" fill="#000000" />
+                    <rect x="50" y="48" width="4" height="4" fill="#000000" />
+                    <rect x="54" y="30" width="4" height="4" fill="#000000" />
+                    <rect x="62" y="30" width="4" height="4" fill="#000000" />
+                    <rect x="70" y="30" width="4" height="4" fill="#000000" />
+                    <rect x="56" y="36" width="4" height="4" fill="#000000" />
+                    <rect x="64" y="36" width="4" height="4" fill="#000000" />
+                    <rect x="54" y="42" width="4" height="4" fill="#000000" />
+                    <rect x="60" y="42" width="4" height="4" fill="#000000" />
+                    <rect x="68" y="42" width="4" height="4" fill="#000000" />
+                    <rect x="54" y="48" width="4" height="4" fill="#000000" />
+                    <rect x="62" y="48" width="4" height="4" fill="#000000" />
+                    <rect x="70" y="48" width="4" height="4" fill="#000000" />
+                    <rect x="30" y="54" width="4" height="4" fill="#000000" />
+                    <rect x="38" y="54" width="4" height="4" fill="#000000" />
+                    <rect x="44" y="54" width="4" height="4" fill="#000000" />
+                    <rect x="50" y="54" width="4" height="4" fill="#000000" />
+                    <rect x="30" y="60" width="4" height="4" fill="#000000" />
+                    <rect x="36" y="60" width="4" height="4" fill="#000000" />
+                    <rect x="44" y="60" width="4" height="4" fill="#000000" />
+                    <rect x="30" y="68" width="4" height="4" fill="#000000" />
+                    <rect x="40" y="68" width="4" height="4" fill="#000000" />
+                    <rect x="48" y="68" width="4" height="4" fill="#000000" />
+                    <rect x="54" y="54" width="4" height="4" fill="#000000" />
+                    <rect x="62" y="54" width="4" height="4" fill="#000000" />
+                    <rect x="70" y="54" width="4" height="4" fill="#000000" />
+                    <rect x="56" y="60" width="4" height="4" fill="#000000" />
+                    <rect x="64" y="60" width="4" height="4" fill="#000000" />
+                    <rect x="54" y="66" width="4" height="4" fill="#000000" />
+                    <rect x="62" y="66" width="4" height="4" fill="#000000" />
+                    <rect x="70" y="66" width="4" height="4" fill="#000000" />
+                    <rect x="58" y="72" width="4" height="4" fill="#000000" />
+                    <rect x="68" y="72" width="4" height="4" fill="#000000" />
+                </svg>
+            </div>
+            <div class="signature-right">
+                <hr class="signature-line" />
+                <div class="signature-label">Authorized Signature</div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
     </div>
 </body>
 </html>

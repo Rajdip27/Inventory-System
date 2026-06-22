@@ -156,29 +156,31 @@ public class SalesInvoiceController : Controller
             TempData["Error"] = "Invoice not found!";
             return RedirectToAction(nameof(Index));
         }
-        // Render the view to HTML
-        ViewBag.SoldBy = "Admin";
-        ViewBag.SoldTo = "Walk-in Customer";
+
+        ViewBag.SoldBy = "Ayon Bhattacharya";
+        ViewBag.SoldTo = "(IFC)";
         var htmlContent = await _renderToStringRenderer.RenderViewToStringAsync(
             "PdfTemplates/_InvoicePdf",
             invoice
         );
+
         var pdfOptions = new PdfOptions
         {
             BaseUrl = $"{Request.Scheme}://{Request.Host}",
             EnableLocalFileAccess = true,
             LoadImages = true,
             PageSize = "A4",
-            Landscape = false,  // Landscape for horizontal layout
-            MarginTop = 5,     // Zero margins - handled by CSS
-            MarginBottom = 5,
-            MarginLeft = 5,
-            MarginRight = 5,
+            Landscape = false,
+            MarginTop = 2,
+            MarginBottom = 2,
+            MarginLeft = 2,
+            MarginRight = 2,
             ShowPageNumbers = false,
             ColorMode = true,
-            HideHeader = true,  // Hide DinkToPdf header
-            HideFooter = true,  // Hide DinkToPdf footer
+            HideHeader = true,
+            HideFooter = true,
         };
+
         var pdfBytes = await _pdfService.GeneratePdf(htmlContent, pdfOptions);
         return File(pdfBytes, "application/pdf", $"Invoice_{invoice.InvoiceNo}.pdf");
     }

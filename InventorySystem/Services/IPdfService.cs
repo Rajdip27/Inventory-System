@@ -1,6 +1,7 @@
 ﻿using DinkToPdf;
 using DinkToPdf.Contracts;
 using InventorySystem.Cmmon;
+using System.Text;
 
 namespace InventorySystem.Services;
 
@@ -8,6 +9,7 @@ public interface IPdfService
 {
     Task<byte[]> GeneratePdf(string htmlContent, PdfOptions options = null);
 }
+
 public class PdfService(IConverter _converter) : IPdfService
 {
     public async Task<byte[]> GeneratePdf(string htmlContent, PdfOptions options = null)
@@ -16,11 +18,12 @@ public class PdfService(IConverter _converter) : IPdfService
         {
             options ??= new PdfOptions();
 
+            // Fix: Ensure proper HTML structure with encoding and fonts
+            htmlContent = FixHtmlForPdf(htmlContent, options);
+
             // Inject base URL for relative paths/images
-            // Inject base URL for relative paths/images if Html does not already contain a base/have a head tag
             if (!string.IsNullOrWhiteSpace(options.BaseUrl))
             {
-                // Only inject base tag if there's no <base ...> already in the HTML.
                 var htmlLower = htmlContent?.ToLowerInvariant() ?? "";
                 if (!htmlLower.Contains("<base ") && !htmlLower.Contains("<head"))
                 {
@@ -36,8 +39,6 @@ public class PdfService(IConverter _converter) : IPdfService
                 }
                 else if (!htmlLower.Contains("<base "))
                 {
-                    // If HTML already has a <head> but no <base>, insert a base tag into <head>.
-                    // simple insertion - assumes a <head> tag exists:
                     htmlContent = htmlContent.Replace("<head>", $"<head><base href='{options.BaseUrl}' />");
                 }
             }
@@ -55,18 +56,25 @@ public class PdfService(IConverter _converter) : IPdfService
                 </style>
                 {htmlContent}";
             }
-            // Configure object settings based on options
+
+            // Configure object settings with font fixes
             var objSettings = new ObjectSettings
             {
                 HtmlContent = htmlContentWithCustomSize,
                 WebSettings = new WebSettings
                 {
                     DefaultEncoding = "utf-8",
-                    LoadImages = options.LoadImages
+                    LoadImages = options.LoadImages,
+                    // Fix: Enable JavaScript for better rendering
+                    EnableJavascript = true,
+                    // Fix: Set print media type
+                    PrintMediaType = true,
                 },
                 LoadSettings = new LoadSettings
                 {
-                    BlockLocalFileAccess = !options.EnableLocalFileAccess
+                    BlockLocalFileAccess = !options.EnableLocalFileAccess,
+                    // Fix: Increase timeout for complex pages
+                    StopSlowScript = true,
                 },
                 HeaderSettings = options.HideHeader ? null : new HeaderSettings
                 {
@@ -91,8 +99,8 @@ public class PdfService(IConverter _converter) : IPdfService
                     Spacing = 5
                 }
             };
-            // Configure global settings based on options
 
+            // Configure global settings with DPI fix for better text rendering
             var doc = new HtmlToPdfDocument
             {
                 GlobalSettings = new GlobalSettings
@@ -107,7 +115,9 @@ public class PdfService(IConverter _converter) : IPdfService
                         Left = options.MarginLeft,
                         Right = options.MarginRight
                     },
-                    DocumentTitle = "Generated PDF"
+                    DocumentTitle = "Invoice",
+                    // Fix: Higher DPI for sharper text
+                    DPI = 150,
                 },
                 Objects = { objSettings }
             };
@@ -121,7 +131,78 @@ public class PdfService(IConverter _converter) : IPdfService
         }
     }
 
-    private PaperKind PaperKindFromString(string size) => size.ToUpper() switch
+    /// <summary>
+    /// Fix HTML for better PDF rendering - adds proper fonts and encoding
+    /// </summary>
+    private string FixHtmlForPdf(string html, PdfOptions options)
+    {
+        // Check if HTML already has proper structure
+        var hasHtmlTag = html.Contains("<html", StringComparison.OrdinalIgnoreCase);
+        var hasHeadTag = html.Contains("<head", StringComparison.OrdinalIgnoreCase);
+        var hasBodyTag = html.Contains("<body", StringComparison.OrdinalIgnoreCase);
+
+        var sb = new StringBuilder();
+
+        if (!hasHtmlTag)
+        {
+            sb.AppendLine("<!DOCTYPE html>");
+            sb.AppendLine("<html>");
+        }
+
+        if (!hasHeadTag)
+        {
+            sb.AppendLine("<head>");
+            sb.AppendLine("<meta charset='UTF-8'>");
+            sb.AppendLine("<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>");
+            sb.AppendLine("<style>");
+            sb.AppendLine("  /* ── FIX: Better font rendering for PDF ── */");
+            sb.AppendLine("  body {");
+            sb.AppendLine("    font-family: Arial, Helvetica, sans-serif;");
+            sb.AppendLine("    font-size: 12px;");
+            sb.AppendLine("    -webkit-font-smoothing: antialiased;");
+            sb.AppendLine("    -moz-osx-font-smoothing: grayscale;");
+            sb.AppendLine("    text-rendering: optimizeLegibility;");
+            sb.AppendLine("    background: #ffffff;");
+            sb.AppendLine("    color: #000000;");
+            sb.AppendLine("    margin: 0;");
+            sb.AppendLine("    padding: 0;");
+            sb.AppendLine("  }");
+            sb.AppendLine("  table { border-collapse: collapse; }");
+            sb.AppendLine("  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }");
+            sb.AppendLine("</style>");
+            sb.AppendLine("</head>");
+        }
+        else
+        {
+            // Insert meta tags if head exists but no charset
+            if (!html.Contains("charset", StringComparison.OrdinalIgnoreCase))
+            {
+                html = html.Replace("<head>", "<head><meta charset='UTF-8'>");
+            }
+        }
+
+        if (!hasBodyTag)
+        {
+            sb.AppendLine("<body>");
+        }
+
+        // Add the content
+        sb.AppendLine(html);
+
+        if (!hasBodyTag)
+        {
+            sb.AppendLine("</body>");
+        }
+
+        if (!hasHtmlTag)
+        {
+            sb.AppendLine("</html>");
+        }
+
+        return sb.ToString();
+    }
+
+    private PaperKind PaperKindFromString(string size) => size?.ToUpper() switch
     {
         "A3" => PaperKind.A3,
         "A4" => PaperKind.A4,
