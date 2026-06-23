@@ -164,6 +164,7 @@ public class SalesInvoiceController : Controller
             invoice
         );
 
+        
         var pdfOptions = new PdfOptions
         {
             BaseUrl = $"{Request.Scheme}://{Request.Host}",
@@ -171,17 +172,14 @@ public class SalesInvoiceController : Controller
             LoadImages = true,
             PageSize = "A4",
             Landscape = false,
-            MarginTop = 2,
-            MarginBottom = 2,
-            MarginLeft = 2,
-            MarginRight = 2,
+            MarginTop = 5,
+            MarginBottom = 5,
+            MarginLeft = 5,
+            MarginRight = 5,
             ShowPageNumbers = false,
-            ColorMode = true,
-            HideHeader = true,
-            HideFooter = true,
+            ColorMode = true
         };
-
-        var pdfBytes = await _pdfService.GeneratePdf(htmlContent, pdfOptions);
+        var pdfBytes =  _pdfService.GeneratePdf(htmlContent, pdfOptions);
         return File(pdfBytes, "application/pdf", $"Invoice_{invoice.InvoiceNo}.pdf");
     }
     #endregion
