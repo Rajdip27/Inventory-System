@@ -2,6 +2,7 @@
 using InventorySystem.DatabaseContext;
 using InventorySystem.HealperUnit;
 using InventorySystem.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace InventorySystem.Repositories;
@@ -13,6 +14,8 @@ public interface ISalesInvoiceRepository
 
     Task<(bool success, string message)> AddAsync(SalesInvoice model);
     Task<(bool success, string message)> UpdateAsync(SalesInvoice model);
+    Task<List<SelectListItem>> GetSalesInvoicesDropdownAsync();
+
 }
 
 public class SalesInvoiceRepository : ISalesInvoiceRepository
@@ -25,7 +28,19 @@ public class SalesInvoiceRepository : ISalesInvoiceRepository
         _context = context;
         _user = user;
     }
-
+    public async Task<List<SelectListItem>> GetSalesInvoicesDropdownAsync()
+    {
+        return await _context.SalesInvoices
+            .Where(x => !x.IsDelete)
+            .Include(x => x.Customer)
+            .OrderBy(x => x.InvoiceNo)
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = $"{x.InvoiceNo} ({x.Customer.Name})"
+            })
+            .ToListAsync();
+    }
     #region GET ALL
     public async Task<PaginationModel<SalesInvoice>> GetAllAsync(string search, int pageNumber, int pageSize)
     {
