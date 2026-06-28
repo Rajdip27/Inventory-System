@@ -1,16 +1,10 @@
-﻿@using InventorySystem.Cmmon
+﻿
+@using InventorySystem.Cmmon
 @model List<CustomerPayment>
 
 @{
+    ViewData["Title"] = "Customer Payments";
     int sl = 1;
-
-    long? selectedCustomer = Context.Request.Query["customerId"].ToString() == ""
-        ? null
-        : long.Parse(Context.Request.Query["customerId"]);
-
-    long? selectedInvoice = Context.Request.Query["invoiceId"].ToString() == ""
-        ? null
-        : long.Parse(Context.Request.Query["invoiceId"]);
 }
 
 <div class="page-content">
@@ -19,61 +13,57 @@
 
         <!-- HEADER -->
         <div class="table-card-header">
+
             <div>
                 <h5 class="table-card-title">Customer Payments</h5>
                 <small class="table-card-subtitle">
-                    Manage all customer payments • @Model?.Count items
+                    Manage all customer payments • @(Model?.Count ?? 0) items
                 </small>
             </div>
 
             <div class="d-flex gap-3 align-items-center">
 
-                <!-- FILTER FORM -->
-                <form method="get" class="d-flex gap-2">
+                <!-- FILTER -->
+                <form asp-action="Index" method="get" class="d-flex gap-2 align-items-center">
 
-                    <!-- CUSTOMER -->
-                    <select name="customerId" class="form-select" style="width:200px;">
+                    <select name="customerId"
+                            asp-items="ViewBag.Customers"
+                            class="form-select"
+                            style="width:220px;">
                         <option value="">All Customers</option>
-
-                        @foreach (var c in ViewBag.Customers)
-                        {
-                            <option value="@c.Id"
-                                    selected="@(selectedCustomer == c.Id)">
-                                @c.Name
-                            </option>
-                        }
                     </select>
 
-                    <!-- INVOICE -->
-                    <select name="invoiceId" class="form-select" style="width:200px;">
+                    <select name="invoiceId"
+                            asp-items="ViewBag.Invoices"
+                            class="form-select"
+                            style="width:220px;">
                         <option value="">All Invoices</option>
-
-                        @foreach (var i in ViewBag.Invoices)
-                        {
-                            <option value="@i.Id"
-                                    selected="@(selectedInvoice == i.Id)">
-                                @i.InvoiceNo
-                            </option>
-                        }
                     </select>
 
-                    <button class="btn btn-primary-sm" type="submit">
+                    <button type="submit" class="btn btn-primary-sm">
                         <i class="ri-search-line"></i>
                     </button>
+
+                    <a asp-action="Index" class="btn btn-secondary-sm">
+                        Reset
+                    </a>
 
                 </form>
 
                 <!-- CREATE -->
                 <a asp-action="CreateAndEdit"
                    class="btn btn-primary-sm d-flex align-items-center gap-2">
-                    <i class="ri-add-line"></i> New Payment
+                    <i class="ri-add-line"></i>
+                    New Payment
                 </a>
 
             </div>
+
         </div>
 
         <!-- TABLE -->
         <div class="table-responsive">
+
             <table class="data-table">
 
                 <thead>
@@ -92,18 +82,18 @@
 
                     @if (Model != null && Model.Any())
                     {
-                        foreach (var item in Model)
+                        @foreach (var item in Model)
                         {
                             <tr>
 
                                 <td class="text-center">@sl</td>
 
                                 <td class="fw-semibold">
-                                    @item.Customer?.Name
+                                    @(item.Customer?.Name ?? "-")
                                 </td>
 
                                 <td>
-                                    @item.SalesInvoice?.InvoiceNo
+                                    @(item.SalesInvoice?.InvoiceNo ?? "-")
                                 </td>
 
                                 <td>
@@ -117,17 +107,21 @@
                                 </td>
 
                                 <td class="text-end fw-semibold">
-                                    @item.Amount
+                                    @item.Amount.ToString("N2")
                                 </td>
 
                                 <td class="text-center">
+
                                     <div class="action-btns">
+
                                         <a asp-action="CreateAndEdit"
                                            asp-route-id="@item.Id"
                                            class="action-btn action-btn--edit">
                                             <i class="ri-edit-line"></i>
                                         </a>
+
                                     </div>
+
                                 </td>
 
                             </tr>
@@ -140,7 +134,7 @@
                         <tr>
                             <td colspan="7" class="empty-state">
                                 <i class="ri-money-dollar-circle-line" style="font-size:42px;"></i>
-                                <p>No payments found</p>
+                                <p>No customer payments found</p>
                             </td>
                         </tr>
                     }
@@ -148,7 +142,10 @@
                 </tbody>
 
             </table>
+
         </div>
 
     </div>
+
 </div>
+

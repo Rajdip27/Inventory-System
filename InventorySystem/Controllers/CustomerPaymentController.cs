@@ -46,6 +46,8 @@ public class CustomerPaymentController : Controller
     [HttpGet]
     public async Task<IActionResult> CreateAndEdit(long? id)
     {
+        ViewBag.Customers = await _customerRepo.GetCustomerDropdownAsync();
+        ViewBag.Invoices = await _salesInvoiceRepo.GetSalesInvoicesDropdownAsync();
         _logger.LogInfo($"Payment CreateAndEdit GET | id: {id}");
 
         if (id == null || id == 0)

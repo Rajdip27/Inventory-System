@@ -1,1 +1,197 @@
 ﻿
+@model CustomerPayment
+@{
+    ViewData["Title"] = Model?.Id > 0 ? "Edit Customer Payment" : "New Customer Payment";
+
+    bool isEdit = Model?.Id > 0;
+
+    string formTitle = isEdit
+        ? "Edit Customer Payment"
+        : "New Customer Payment";
+}
+<div class="page-content">
+
+    <div class="table-card">
+
+        <!-- Header -->
+        <div class="table-card-header">
+
+            <div>
+                <h5 class="table-card-title">@formTitle</h5>
+                <small class="table-card-subtitle">
+                    @(isEdit
+                        ? "Update customer payment information"
+                        : "Record a new customer payment")
+                </small>
+            </div>
+
+            <div>
+                <a asp-action="Index"
+                   class="btn btn-outline-sm d-flex align-items-center gap-2">
+                    <i class="ri-arrow-left-line"></i>
+                    Back to List
+                </a>
+            </div>
+
+        </div>
+
+        <!-- Body -->
+        <div class="p-5">
+
+            <form asp-action="CreateAndEdit" method="post" class="row g-4">
+
+                @if (isEdit)
+                {
+                    <input asp-for="Id" type="hidden" />
+                }
+
+                <!-- Customer -->
+                <div class="col-md-6">
+
+                    <label class="form-label fw-medium">
+                        Customer
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    <select asp-for="CustomerId"
+                            asp-items="ViewBag.Customers"
+                            class="toolbar-input">
+                        <option value="">Select Customer</option>
+                    </select>
+
+                    <span asp-validation-for="CustomerId"
+                          class="text-danger small"></span>
+
+                </div>
+
+                <!-- Invoice -->
+                <div class="col-md-6">
+
+                    <label class="form-label fw-medium">
+                        Invoice
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    <select asp-for="SalesInvoiceId"
+                            asp-items="ViewBag.Invoices"
+                            class="toolbar-input">
+                        <option value="">Select Invoice</option>
+                    </select>
+
+                    <span asp-validation-for="SalesInvoiceId"
+                          class="text-danger small"></span>
+
+                </div>
+
+                <!-- Payment Date -->
+                <div class="col-md-6">
+
+                    <label class="form-label fw-medium">
+                        Payment Date
+                    </label>
+
+                    <input asp-for="PaymentDate"
+                           type="date"
+                           class="toolbar-input" />
+
+                    <span asp-validation-for="PaymentDate"
+                          class="text-danger small"></span>
+
+                </div>
+
+                <!-- Payment Method -->
+                <div class="col-md-6">
+
+                    <label class="form-label fw-medium">
+                        Payment Method
+                    </label>
+
+                    <select asp-for="PaymentMethod"
+                            class="toolbar-input">
+
+                        <option value="">Select Method</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Bank">Bank</option>
+                        <option value="Cheque">Cheque</option>
+                        <option value="Mobile Banking">Mobile Banking</option>
+
+                    </select>
+
+                    <span asp-validation-for="PaymentMethod"
+                          class="text-danger small"></span>
+
+                </div>
+
+                <!-- Amount -->
+                <div class="col-md-6">
+
+                    <label class="form-label fw-medium">
+                        Amount
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    <input asp-for="Amount"
+                           type="number"
+                           step="0.01"
+                           class="toolbar-input"
+                           placeholder="Enter Payment Amount" />
+
+                    <span asp-validation-for="Amount"
+                          class="text-danger small"></span>
+
+                </div>
+
+                <!-- Remarks -->
+                <div class="col-md-6">
+
+                    <label class="form-label fw-medium">
+                        Remarks
+                    </label>
+
+                    <input asp-for="Remarks"
+                           class="toolbar-input"
+                           placeholder="Optional remarks" />
+
+                    <span asp-validation-for="Remarks"
+                          class="text-danger small"></span>
+
+                </div>
+
+                <!-- Buttons -->
+                <div class="col-12 d-flex gap-3 pt-4 border-top">
+
+                    <button type="submit"
+                            class="btn btn-primary-sm d-flex align-items-center gap-2">
+
+                        <i class="ri-save-line"></i>
+
+                        @(isEdit
+                            ? "Update Payment"
+                            : "Save Payment")
+
+                    </button>
+
+                    <a asp-action="Index"
+                       class="btn btn-outline-sm d-flex align-items-center gap-2">
+
+                        <i class="ri-close-line"></i>
+
+                        Cancel
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+

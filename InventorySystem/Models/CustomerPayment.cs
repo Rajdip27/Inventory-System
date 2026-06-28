@@ -12,4 +12,5 @@ public class CustomerPayment: AuditableEntity
     public decimal Amount { get; set; }
     public DateTime PaymentDate { get; set; }
     public string PaymentMethod { get; set; }
+    public string Remarks { get; set; } = string.Empty;
 }
