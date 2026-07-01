@@ -107,4 +107,20 @@ public class CustomerPaymentController : Controller
         var data = await _repo.GetCustomerLedgerAsync(customerId, invoiceId);
         return View(data);
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetInvoicesByCustomer(long customerId)
+    {
+        var invoices = await _customerRepo.GetInvoicesByCustomer(customerId);
+        return Json(invoices);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetInvoiceDetails(long invoiceId)
+    {
+        var result = await _repo.GetInvoiceDetails(invoiceId);
+        if (result == null)
+            return NotFound();
+        return Json(result);
+    }
 }

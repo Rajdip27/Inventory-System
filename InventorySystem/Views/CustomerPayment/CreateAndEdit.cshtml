@@ -1,5 +1,4 @@
-﻿
-@model CustomerPayment
+﻿@model CustomerPayment
 @{
     ViewData["Title"] = Model?.Id > 0 ? "Edit Customer Payment" : "New Customer Payment";
 
@@ -72,9 +71,11 @@
                         <span class="text-danger">*</span>
                     </label>
 
-                    <select asp-for="SalesInvoiceId"
-                            asp-items="ViewBag.Invoices"
-                            class="toolbar-input">
+                    
+
+                    <select asp-for="SalesInvoiceId" asp-items="ViewBag.Invoices"
+                            class="toolbar-input"
+                            id="SalesInvoiceId">
                         <option value="">Select Invoice</option>
                     </select>
 
@@ -121,7 +122,29 @@
                           class="text-danger small"></span>
 
                 </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">Invoice Amount</label>
+                    <input type="text"
+                           id="InvoiceAmount"
+                           class="toolbar-input"
+                           readonly />
+                </div>
 
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">Total Paid</label>
+                    <input type="text"
+                           id="TotalPaid"
+                           class="toolbar-input"
+                           readonly />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">Due Amount</label>
+                    <input type="text"
+                           id="DueAmount"
+                           class="toolbar-input"
+                           readonly />
+                </div>
                 <!-- Amount -->
                 <div class="col-md-6">
 
@@ -192,6 +215,75 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+
+
+          $("#SalesInvoiceId").change(function () {
+            var invoiceId = $(this).val();
+            if (invoiceId == "") {
+                $("#InvoiceAmount").val("");
+                $("#TotalPaid").val("");
+                $("#DueAmount").val("");
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("GetInvoiceDetails", "CustomerPayment")',
+                type: 'GET',
+                data: { invoiceId: invoiceId },
+                success: function (data) {
+
+                    if (data != null) {
+                        $("#InvoiceAmount").val(data.invoiceAmount);
+                        $("#TotalPaid").val(data.totalPaid);
+                        $("#DueAmount").val(data.dueAmount);
+                    }
+                },
+                error: function () {
+                    alert("Unable to load invoice details.");
+                }
+            });
+
+        });
+
+
+
+            $("#CustomerId").change(function () {
+                var customerId = $(this).val();
+                $("#SalesInvoiceId").empty();
+                $("#SalesInvoiceId").append('<option value="">Loading...</option>');
+
+                if (customerId == "") {
+                    $("#SalesInvoiceId").html('<option value="">Select Invoice</option>');
+                    return;
+                }
+                $.ajax({
+                    url: '@Url.Action("GetInvoicesByCustomer", "CustomerPayment")',
+                    type: 'GET',
+                    data: { customerId: customerId },
+                    success: function (response) {
+
+                        $("#SalesInvoiceId").empty();
+                        $("#SalesInvoiceId").append('<option value="">Select Invoice</option>');
+
+                        $.each(response, function (i, item) {
+                            $("#SalesInvoiceId").append(
+                                $('<option></option>')
+                                    .val(item.value)
+                                    .text(item.text)
+                            );
+                        });
+                    },
+                    error: function () {
+                        alert("Failed to load invoices.");
+                    }
+                });
+
+            });
+
+        });
+    </script>
 }
 
 

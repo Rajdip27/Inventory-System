@@ -1,24 +1,20 @@
 ﻿using InventorySystem.DatabaseContext;
 using InventorySystem.Models;
 using InventorySystem.Repositories;
+using InventorySystem.ViewModel;
 using Microsoft.EntityFrameworkCore;
-
 namespace InventorySystem.Repositories;
+public interface ICustomerPaymentRepository
+{
+    Task<List<CustomerPayment>> GetAllPaymentsAsync(long? customerId = null,long? invoiceId = null);
 
-    public interface ICustomerPaymentRepository
-    {
-        Task<List<CustomerPayment>> GetAllPaymentsAsync(
-        long? customerId = null,
-        long? invoiceId = null);
+    Task<List<CustomerLedger>> GetCustomerLedgerAsync(long? customerId = null,long? invoiceId = null);
 
-        Task<List<CustomerLedger>> GetCustomerLedgerAsync(
-            long? customerId = null,
-            long? invoiceId = null);
+    Task<CustomerPayment> GetPaymentByIdAsync(long id);
 
-        Task<CustomerPayment> GetPaymentByIdAsync(long id);
-
-        Task<bool> AddOrEditAsync(CustomerPayment model);
-    }
+    Task<bool> AddOrEditAsync(CustomerPayment model);
+    Task<InvoiceDetailsDto> GetInvoiceDetails(long invoiceId);
+}
 
 public class CustomerPaymentRepository(ApplicationDbContext context) : ICustomerPaymentRepository
 {
@@ -169,6 +165,31 @@ public class CustomerPaymentRepository(ApplicationDbContext context) : ICustomer
             .OrderBy(x => x.TransactionDate)
             .ThenBy(x => x.Id)
             .ToListAsync();
+    }
+
+    public async Task<InvoiceDetailsDto> GetInvoiceDetails(long invoiceId)
+    {
+        var invoice = await _context.SalesInvoices
+            .Where(x => x.Id == invoiceId)
+            .Select(x => new
+            {
+                InvoiceAmount = x.GrandTotal
+            })
+            .FirstOrDefaultAsync();
+
+        if (invoice == null)
+            return null;
+
+        decimal totalPaid = await _context.CustomerPayments
+            .Where(x => x.SalesInvoiceId == invoiceId)
+            .SumAsync(x => (decimal?)x.Amount) ?? 0;
+
+        return new InvoiceDetailsDto
+        {
+            InvoiceAmount = invoice.InvoiceAmount,
+            TotalPaid = totalPaid,
+            DueAmount = invoice.InvoiceAmount - totalPaid
+        };
     }
 
     #endregion

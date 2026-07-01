@@ -15,6 +15,7 @@ public interface ICustomerRepository
     Task<bool> UpdateAsync(Customer customer);
     Task<bool> DeleteAsync(int id);
     Task<List<SelectListItem>> GetCustomerDropdownAsync();
+    Task<List<SelectListItem>> GetInvoicesByCustomer(long customerId);
 }
 public class CustomerRepository : ICustomerRepository
 {
@@ -281,5 +282,18 @@ public class CustomerRepository : ICustomerRepository
             await transaction.RollbackAsync();
             return false;
         }
+    }
+
+    public async Task<List<SelectListItem>> GetInvoicesByCustomer(long customerId)
+    {
+        return await _context.SalesInvoices
+            .Where(x => x.CustomerId == customerId)
+            .OrderByDescending(x => x.Id)
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.InvoiceNo
+            })
+            .ToListAsync();
     }
 }
