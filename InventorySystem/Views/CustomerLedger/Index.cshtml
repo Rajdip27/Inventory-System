@@ -1,7 +1,21 @@
 ﻿@model List<CustomerLedger>
 
+@{
+    ViewData["Title"] = "Customer Ledger";
+
+    int sl = 1;
+
+    bool isSearch =
+        ViewBag.CustomerId != null ||
+        ViewBag.StartDate != null ||
+        ViewBag.EndDate != null;
+
+    decimal totalDebit = Model?.Sum(x => x.Debit) ?? 0;
+    decimal totalCredit = Model?.Sum(x => x.Credit) ?? 0;
+}
+
 <div class="page-content">
-    <!-- TABLE CARD -->
+
     <div class="table-card">
 
         <!-- Header -->
@@ -16,31 +30,35 @@
 
             <div class="d-flex gap-3 align-items-center">
 
-                <!-- FILTER FORM (SAME STYLE AS SEARCH) -->
-                <form method="get" class="d-flex gap-2 align-items-center">
+                <form method="get" asp-action="Index" class="d-flex gap-2 align-items-center">
 
-                    <!-- Customer Search Field Style -->
-                    <div class="search-field" style="width: 220px;">
+                    <!-- Customer -->
+                    <div class="search-field" style="width:220px;">
                         <i class="ri-user-search-line"></i>
 
-                        <select name="customerId"
-                                class="toolbar-input">
-
-                            <option value="">All Customers</option>
+                        <select name="customerId" class="toolbar-input">
+                            <option value="">Select Customer</option>
 
                             @foreach (var item in ViewBag.Customers)
                             {
-                                <option value="@item.Value"
-                                        selected="@(ViewBag.CustomerId?.ToString() == item.Value)">
-                                    @item.Text
-                                </option>
+                                if (ViewBag.CustomerId?.ToString() == item.Value)
+                                {
+                                    <option value="@item.Value" selected>
+                                        @item.Text
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@item.Value">
+                                        @item.Text
+                                    </option>
+                                }
                             }
-
                         </select>
                     </div>
 
                     <!-- Start Date -->
-                    <div class="search-field" style="width: 160px;">
+                    <div class="search-field" style="width:160px;">
                         <i class="ri-calendar-line"></i>
 
                         <input type="date"
@@ -50,7 +68,7 @@
                     </div>
 
                     <!-- End Date -->
-                    <div class="search-field" style="width: 160px;">
+                    <div class="search-field" style="width:160px;">
                         <i class="ri-calendar-line"></i>
 
                         <input type="date"
@@ -59,11 +77,14 @@
                                value="@ViewBag.EndDate" />
                     </div>
 
-                    <!-- SEARCH BUTTON (SAME AS YOUR THEME) -->
-                    <button type="submit"
-                            class="btn btn-primary-sm">
+                    <button type="submit" class="btn btn-primary-sm">
                         <i class="ri-search-line"></i>
                     </button>
+
+                    <a asp-action="Index" class="btn btn-primary-sm">
+                        <i class="ri-refresh-line"></i>
+                        Reset
+                    </a>
 
                 </form>
 
@@ -71,7 +92,7 @@
 
         </div>
 
-        <!-- TABLE -->
+        <!-- Table -->
         <div class="table-responsive">
 
             <table class="data-table">
@@ -92,25 +113,29 @@
 
                 <tbody>
 
-                    @{
-                        int sl = 1;
+                    @if (!isSearch)
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center py-5">
+                                <i class="ri-search-line" style="font-size:45px;"></i>
+                                <br />
+                                Please select Customer and Date Range then click Search.
+                            </td>
+                        </tr>
                     }
-
-                    @if (Model != null && Model.Any())
+                    else if (Model != null && Model.Any())
                     {
                         foreach (var item in Model)
                         {
                             <tr>
 
-                                <td class="text-center fw-medium">
-                                    @sl
-                                </td>
+                                <td class="text-center">@sl</td>
 
                                 <td>
                                     @item.TransactionDate.ToString("dd-MMM-yyyy")
                                 </td>
 
-                                <td class="fw-semibold">
+                                <td>
                                     @item.Customer?.Name
                                 </td>
 
@@ -146,20 +171,43 @@
                     else
                     {
                         <tr>
-                            <td colspan="9" class="empty-state">
-                                <i class="ri-inbox-line" style="font-size:42px;"></i>
-                                <p>No ledger records found</p>
+                            <td colspan="9" class="text-center py-5">
+                                <i class="ri-inbox-line" style="font-size:45px;"></i>
+                                <br />
+                                No ledger records found.
                             </td>
                         </tr>
                     }
 
                 </tbody>
 
+                @if (isSearch && Model != null && Model.Any())
+                {
+                    <tfoot>
+                        <tr class="fw-bold">
+
+                            <td colspan="6" class="text-end">
+                                Total
+                            </td>
+
+                            <td class="text-end text-danger">
+                                @totalDebit.ToString("N2")
+                            </td>
+
+                            <td class="text-end text-success">
+                                @totalCredit.ToString("N2")
+                            </td>
+
+                            <td></td>
+
+                        </tr>
+                    </tfoot>
+                }
+
             </table>
 
         </div>
 
     </div>
-  
 
 </div>

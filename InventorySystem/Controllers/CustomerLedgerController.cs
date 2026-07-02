@@ -21,29 +21,33 @@ public CustomerLedgerController(
         _logger = logger;
     }
 
-    public async Task<IActionResult> Index(
-        long? customerId,
-        DateTime? startDate,
-        DateTime? endDate)
+    public async Task<IActionResult> Index(long? customerId,DateTime? startDate,DateTime? endDate)
     {
         _logger.LogInfo(
             $"Customer Ledger Index called | CustomerId:{customerId} | StartDate:{startDate} | EndDate:{endDate}");
 
         try
         {
-            var customers = await _customerRepo.GetAllAsync("", 1, 10000);
-
-            ViewBag.Customers = customers.Items
-                .Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.Name
-                })
-                .ToList();
+            ViewBag.Customers = await _customerRepo.GetCustomerDropdownAsync();
 
             ViewBag.CustomerId = customerId;
             ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
             ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
+
+            // First page load - don't load data
+            if (!customerId.HasValue &&
+                !startDate.HasValue &&
+                !endDate.HasValue)
+            {
+                return View(new List<CustomerLedger>());
+            }
+
+            // Optional: Require customer selection
+            if (!customerId.HasValue)
+            {
+                TempData["Error"] = "Please select a customer.";
+                return View(new List<CustomerLedger>());
+            }
 
             var ledgerList = await _ledgerRepo.GetLedgerAsync(
                 customerId,
@@ -66,6 +70,5 @@ public CustomerLedgerController(
             return View(new List<CustomerLedger>());
         }
     }
-
 
 }
