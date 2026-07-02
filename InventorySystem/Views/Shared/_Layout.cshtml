@@ -36,6 +36,7 @@
         <!-- Navigation Menu -->
         <nav class="sidebar-nav">
 
+            <!-- ===================== MAIN ===================== -->
             <div class="nav-section-label">Main</div>
 
             <a class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")"
@@ -44,31 +45,68 @@
                 <span>Dashboard</span>
             </a>
 
-            <a class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Inventory" ? "active" : "")"
-               href="/Inventory">
+            <!-- ===================== MASTER ===================== -->
+            <div class="nav-section-label">Master</div>
+
+            <!-- Product -->
+            <a class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Product" ? "active" : "")"
+               href="/Product/Index">
                 <i class="bi bi-box-seam-fill nav-icon"></i>
-                <span>Inventory</span>
+                <span>Products</span>
             </a>
 
+            <!-- Customer -->
             <a class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Customer" ? "active" : "")"
                href="/Customer/Index">
                 <i class="bi bi-people-fill nav-icon"></i>
                 <span>Customers</span>
             </a>
 
-            <a class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Orders" ? "active" : "")"
-               href="/Orders">
-                <i class="bi bi-cart4 nav-icon"></i>
-                <span>Orders</span>
-                <span class="nav-badge">12</span>
-            </a>
-
-            <a class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Suppliers" ? "active" : "")"
-               href="/Suppliers">
+            <!-- Supplier -->
+            <a class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Supplier" ? "active" : "")"
+               href="/Supplier/Index">
                 <i class="bi bi-truck nav-icon"></i>
                 <span>Suppliers</span>
             </a>
 
+            <!-- ===================== TRANSACTIONS ===================== -->
+            <div class="nav-section-label">Transactions</div>
+
+            <!-- Purchase -->
+            <a class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Purchase" ? "active" : "")"
+               href="/Purchase/Index">
+                <i class="bi bi-cart-plus-fill nav-icon"></i>
+                <span>Purchase</span>
+            </a>
+
+            <!-- Sales Invoice -->
+            <a class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "SalesInvoice" ? "active" : "")"
+               href="/SalesInvoice/Index">
+                <i class="bi bi-receipt-cutoff nav-icon"></i>
+                <span>Sales Invoice</span>
+            </a>
+
+            <!-- Customer Payment -->
+            <a class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "CustomerPayment" ? "active" : "")"
+               href="/CustomerPayment/Index">
+                <i class="bi bi-cash-coin nav-icon"></i>
+                <span>Customer Payment</span>
+            </a>
+
+            <!-- Customer Ledger -->
+            <a class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "CustomerLedger" ? "active" : "")"
+               href="/CustomerLedger/Index">
+                <i class="bi bi-journal-bookmark-fill nav-icon"></i>
+                <span>Customer Ledger</span>
+            </a>
+
+            <a class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "StockLedger" ? "active" : "")"
+               href="/StockLedger/Index">
+                <i class="bi bi-journal-text nav-icon"></i>
+                <span>Stock Ledger</span>
+            </a>
+
+            <!-- ===================== REPORTS ===================== -->
             <div class="nav-section-label">Reports</div>
 
             <a class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Reports" ? "active" : "")"
@@ -77,12 +115,14 @@
                 <span>Reports</span>
             </a>
 
+            <!-- Analytics -->
             <a class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Analytics" ? "active" : "")"
                href="/Analytics">
                 <i class="bi bi-graph-up-arrow nav-icon"></i>
                 <span>Analytics</span>
             </a>
 
+            <!-- ===================== SYSTEM ===================== -->
             <div class="nav-section-label">System</div>
 
             <a class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Settings" ? "active" : "")"
