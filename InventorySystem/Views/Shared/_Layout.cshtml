@@ -17,6 +17,7 @@
     <!-- jQuery (required) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <!-- Toastr JS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
@@ -159,7 +160,7 @@
                 <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
                     <i class="bi bi-list"></i>
                 </button>
-               @*  <div class="page-title-area">
+                @*  <div class="page-title-area">
                     <h1 class="page-title">@ViewData["Title"]</h1>
                     <nav class="breadcrumb-nav" aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0">
@@ -229,7 +230,11 @@
 
     <script src="~/js/site.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <script>
+
+        
         toastr.options = {
         "closeButton": true,
         "progressBar": true,
@@ -256,9 +261,21 @@
         {
             <text>toastr.info('@TempData["info"]');</text>
         }
-    </script>
- 
 
+
+        $(function () {
+        $('select').each(function () {
+        if (!$(this).hasClass('select2-hidden-accessible')) {
+        $(this).select2({
+        width: 'resolve',
+        allowClear: true
+        });
+        }
+        });
+        });
+    </script>
+
+ 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
